@@ -1,0 +1,12 @@
+{
+    "sepolia": {
+        "old": {},
+        "new": {
+            "TemplateToken": {
+                "address": "0x79a9e3d05949eb9cad26046ebF856CbC3514EEfF",
+                "deployedBlock": 8611036,
+                "chainId": 11155111
+            }
+        }
+    }
+}
