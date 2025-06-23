@@ -7,7 +7,7 @@ import path from "path";
 import { getAddressSaver, verify } from "./utils/helpers";
 const { ethers, network } = hre;
 
-const CONTRACT_NAME = "TemplateToken";
+const CONTRACT_NAME = "UniversalTreasury";
 const FILE_NAME = "deploymentAddresses";
 const PATH_TO_FILE = path.join(__dirname, `./${FILE_NAME}.json`);
 
@@ -27,7 +27,7 @@ async function deploy() {
     console.log("\n --- ------- ---- --- ");
 
     const Contract = await ethers.getContractFactory(CONTRACT_NAME);
-    const contract = await Contract.connect(deployer).deploy(args.name, args.symbol, args.decimals);
+    const contract = await Contract.connect(deployer).deploy();
     const deployTransaction = (await contract.deployed()).deployTransaction.wait();
 
     console.log(`Contract: \`${CONTRACT_NAME}\` is deployed to \`${contract.address}\`|\`${hre.network.name}\`.`);
@@ -43,7 +43,7 @@ async function deploy() {
     );
 
     console.log("\nDeployment is completed.");
-    await verify(contract.address, [args.name, args.symbol, args.decimals]);
+    await verify(contract.address, []);
     console.log("\nDone.");
 }
 

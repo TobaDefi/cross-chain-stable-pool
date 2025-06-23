@@ -36,7 +36,8 @@
     },
     "dependencies": {
         "@openzeppelin/contracts": "5.1.0",
-        "@openzeppelin/contracts-upgradeable": "5.1.0"
+        "@openzeppelin/contracts-upgradeable": "5.1.0",
+        "@zetachain/protocol-contracts": "^13.0.0"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.1.2",
