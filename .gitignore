@@ -1,6 +1,8 @@
 # Hardhat files.
 cache
-artifacts
+artifacts/@*/
+artifacts/contracts/mocks/
+artifacts/contracts/*/*.dbg.json
 
 # Artifacts that TypeChain creates.
 typechain
@@ -55,4 +57,7 @@ docs/errors/
 docs/interfaces/
 
 # ABI
-/abi
+/abi/@*/
+
+# External contracts types for tests
+test/helpers/types/

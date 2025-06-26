@@ -1,0 +1,1096 @@
+{
+    "avalanche_mainnet": {
+        "chain_id": 43114,
+        "chain_aliases": [
+            "avalanche_c_chain",
+            "avalanche_c_mainnet",
+            "avalanche_c",
+            "avalanche-c-chain",
+            "avalanche-c-mainnet",
+            "avalanche-c"
+        ],
+        "chain_name": "Avalanche C-Chain Mainnet",
+        "fees": {
+            "assets": [
+                {
+                    "denom": "avax",
+                    "gas": 5000000,
+                    "gas_price": 1000000000
+                }
+            ]
+        },
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "avax",
+                        "exponent": 18
+                    }
+                ],
+                "base": "avax",
+                "symbol": "AVAX"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://subnets.avax.network/c-chain",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://api.avax.network/ext/bc/C/rpc",
+                "type": "evm"
+            },
+            {
+                "url": "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc",
+                "type": "evm"
+            },
+            {
+                "url": "https://rpc.ankr.com/avalanche",
+                "type": "evm"
+            },
+            {
+                "url": "https://avalanche.public-rpc.com",
+                "type": "evm"
+            }
+        ]
+    },
+    "avalanche_testnet": {
+        "chain_id": 43113,
+        "chain_aliases": [
+            "avalanche_c_fuji_chain",
+            "avalanche_c_fuji_testnet",
+            "avalanche_c_fuji",
+            "avalanche-c-fuji-chain",
+            "avalanche-c-fuji-testnet",
+            "avalanche-c-fuji"
+        ],
+        "chain_name": "Avalanche C-Chain Fuji Testnet",
+        "fees": {
+            "assets": [
+                {
+                    "denom": "avax",
+                    "gas": 5000000,
+                    "gas_price": 1000000000
+                }
+            ]
+        },
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "avax",
+                        "exponent": 18
+                    }
+                ],
+                "base": "avax",
+                "symbol": "AVAX"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://subnets-test.avax.network/c-chain",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://api.avax-test.network/ext/bc/C/rpc",
+                "type": "evm"
+            },
+            {
+                "url": "https://ava-testnet.public.blastapi.io/ext/bc/C/rpc",
+                "type": "evm"
+            },
+            {
+                "url": "https://rpc.ankr.com/avalanche_fuji",
+                "type": "evm"
+            },
+            {
+                "url": "https://avalanche-fuji-c-chain-rpc.publicnode.com",
+                "type": "evm"
+            }
+        ]
+    },
+    "arbitrum_mainnet": {
+        "chain_id": 42161,
+        "chain_aliases": [
+            "arbitrum",
+            "arbitrum_network",
+            "arbitrum_chain",
+            "arbitrum-network",
+            "arbitrum-chain",
+            "arbitrum-mainnet"
+        ],
+        "chain_name": "Arbitrum Mainnet",
+        "fees": {
+            "assets": [
+                {
+                    "denom": "eth",
+                    "gas": 5000000,
+                    "gas_price": 1000000000
+                }
+            ]
+        },
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "eth",
+                        "exponent": 18
+                    }
+                ],
+                "base": "eth",
+                "symbol": "ETH"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://arbiscan.io/",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://arbitrum-one-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://arbitrum.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://arbitrum.blockpi.network/v1/rpc/public",
+                "type": "evm"
+            },
+            {
+                "url": "https://rpc.ankr.com/arbitrum",
+                "type": "evm"
+            }
+        ]
+    },
+    "arbitrum_sepolia": {
+        "chain_id": 421614,
+        "chain_aliases": [
+            "arbitrum_sepolia_testnet",
+            "arbitrum_sepolia",
+            "arbitrum-testnet",
+            "arbitrum-sepolia-testnet",
+            "arbitrum-sepolia"
+        ],
+        "chain_name": "Arbitrum Sepolia Testnet",
+        "fees": {
+            "assets": [
+                {
+                    "denom": "eth",
+                    "gas": 5000000,
+                    "gas_price": 1000000000
+                }
+            ]
+        },
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "eth",
+                        "exponent": 18
+                    }
+                ],
+                "base": "eth",
+                "symbol": "ETH"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://sepolia.arbiscan.io/",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://sepolia-rollup.arbitrum.io/rpc",
+                "type": "evm"
+            },
+            {
+                "url": "https://arbitrum-sepolia-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://arbitrum-sepolia.gateway.tenderly.co",
+                "type": "evm"
+            }
+        ]
+    },
+    "base_mainnet": {
+        "chain_id": 8453,
+        "chain_aliases": [
+            "base",
+            "base_network",
+            "base_chain",
+            "base-network",
+            "base-chain",
+            "base-mainnet"
+        ],
+        "chain_name": "Base Mainnet",
+        "fees": {
+            "assets": [
+                {
+                    "denom": "eth",
+                    "gas": 1000000,
+                    "gas_price": 1000000000
+                }
+            ]
+        },
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "eth",
+                        "exponent": 18
+                    }
+                ],
+                "base": "eth",
+                "symbol": "ETH"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://basescan.org/",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://base-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://base.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://base.blockpi.network/v1/rpc/public",
+                "type": "evm"
+            },
+            {
+                "url": "https://rpc.ankr.com/base",
+                "type": "evm"
+            }
+        ]
+    },
+    "base_sepolia": {
+        "chain_id": 84532,
+        "chain_aliases": [
+            "base_sepolia_testnet",
+            "base_sepolia",
+            "base-testnet",
+            "base-sepolia-testnet",
+            "base-sepolia"
+        ],
+        "chain_name": "Base Sepolia Testnet",
+        "fees": {
+            "assets": [
+                {
+                    "denom": "eth",
+                    "gas": 1000000,
+                    "gas_price": 1000000000
+                }
+            ]
+        },
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "eth",
+                        "exponent": 18
+                    }
+                ],
+                "base": "eth",
+                "symbol": "ETH"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://sepolia.basescan.org/",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://base-sepolia-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://base-sepolia.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://base-sepolia.blockpi.network/v1/rpc/public",
+                "type": "evm"
+            },
+            {
+                "url": "https://rpc.ankr.com/base_sepolia",
+                "type": "evm"
+            }
+        ]
+    },
+    "polygon_mainnet": {
+        "chain_id": 137,
+        "chain_aliases": [
+            "polygon",
+            "polygon_network",
+            "polygon_chain",
+            "polygon-mainnet",
+            "polygon-network",
+            "polygon-chain"
+        ],
+        "chain_name": "Polygon PoS Mainnet",
+        "fees": {
+            "assets": [
+                {
+                    "denom": "pol",
+                    "gas": 1000000,
+                    "gas_price": 80000000000
+                }
+            ]
+        },
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "pol",
+                        "exponent": 18
+                    }
+                ],
+                "base": "pol",
+                "symbol": "POL"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://polygonscan.com",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://polygon-bor-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://polygon.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://polygon.blockpi.network/v1/rpc/public",
+                "type": "evm"
+            },
+            {
+                "url": "https://rpc.ankr.com/polygon",
+                "type": "evm"
+            }
+        ]
+    },
+    "amoy_testnet": {
+        "chain_id": 80002,
+        "chain_aliases": [
+            "amoy",
+            "polygon_amoy",
+            "polygon_testnet",
+            "amoy_chain",
+            "amoy_network",
+            "polygon-amoy",
+            "polygon-testnet",
+            "amoy-chain",
+            "amoy-network",
+            "amoy-testnet",
+            "maticmum"
+        ],
+        "chain_name": "Amoy Testnet",
+        "fees": {
+            "assets": [
+                {
+                    "denom": "tmatic",
+                    "gas": 1000000,
+                    "gas_price": 80000000000
+                }
+            ]
+        },
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "matic",
+                        "exponent": 18
+                    }
+                ],
+                "base": "tmatic",
+                "symbol": "tMATIC"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://amoy.polygonscan.com",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://polygon-amoy-bor-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://polygon-amoy.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://polygon-amoy.blockpi.network/v1/rpc/public",
+                "type": "evm"
+            },
+            {
+                "url": "https://rpc.ankr.com/polygon_amoy",
+                "type": "evm"
+            }
+        ]
+    },
+    "btc_testnet": {
+        "chain_id": 18332,
+        "chain_name": "Bitcoin Testnet",
+        "chain_aliases": [
+            "tbtc",
+            "btc-testnet"
+        ],
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "sat",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "btc",
+                        "exponent": 8
+                    }
+                ],
+                "base": "btc",
+                "symbol": "tBTC"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://blockstream.info/testnet/api",
+                "type": "esplora"
+            },
+            {
+                "url": "https://api.blockcypher.com/v1/btc/test3",
+                "type": "blockcypher"
+            }
+        ]
+    },
+    "btc_mainnet": {
+        "chain_id": 8332,
+        "chain_name": "Bitcoin",
+        "chain_aliases": [
+            "btc",
+            "bitcoin"
+        ],
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "sat",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "btc",
+                        "exponent": 8
+                    }
+                ],
+                "base": "btc",
+                "symbol": "BTC"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://blockstream.info/api",
+                "type": "esplora"
+            },
+            {
+                "url": "https://api.blockcypher.com/v1/btc/main",
+                "type": "blockcypher"
+            }
+        ]
+    },
+    "bsc_mainnet": {
+        "chain_id": 56,
+        "chain_name": "Binance Smart Chain Mainnet",
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "bnb",
+                        "exponent": 18
+                    }
+                ],
+                "base": "bnb",
+                "symbol": "BNB"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://bscscan.com",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "fees": {
+            "assets": [
+                {
+                    "denom": "bnb",
+                    "gas": 1000000,
+                    "gas_price": 5000000000
+                }
+            ]
+        },
+        "api": [
+            {
+                "url": "https://bsc-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://bsc.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://bsc-mainnet.public.blastapi.io",
+                "type": "evm"
+            },
+            {
+                "url": "wss://bsc-mainnet.public.blastapi.io",
+                "type": "evm-ws"
+            },
+            {
+                "url": "https://rpc.ankr.com/bsc",
+                "type": "evm"
+            }
+        ]
+    },
+    "eth_mainnet": {
+        "chain_id": 1,
+        "chain_name": "Ethereum Mainnet",
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "eth",
+                        "exponent": 18
+                    }
+                ],
+                "base": "eth",
+                "symbol": "ETH"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://etherscan.io",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "fees": {
+            "assets": [
+                {
+                    "denom": "eth",
+                    "gas": 1000000,
+                    "gas_price": 38000000000
+                }
+            ]
+        },
+        "api": [
+            {
+                "url": "https://ethereum-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://eth.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://eth-mainnet.public.blastapi.io",
+                "type": "evm"
+            },
+            {
+                "url": "wss://eth-mainnet.public.blastapi.io",
+                "type": "evm-ws"
+            },
+            {
+                "url": "https://rpc.ankr.com/eth",
+                "type": "evm"
+            }
+        ]
+    },
+    "zeta_mainnet": {
+        "chain_id": 7000,
+        "chain_name": "ZetaChain Mainnet",
+        "chain_aliases": [
+            "zetachain_mainnet",
+            "zeta_chain_mainnet",
+            "zeta_network_mainnet",
+            "zeta-chain-mainnet",
+            "zeta-network-mainnet",
+            "zeta-mainnet"
+        ],
+        "bech32_prefix": "zeta",
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "azeta",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "zeta",
+                        "exponent": 18
+                    }
+                ],
+                "base": "azeta",
+                "symbol": "ZETA"
+            }
+        ],
+        "apps": [],
+        "fees": {
+            "assets": [
+                {
+                    "denom": "azeta",
+                    "gas": 1000000,
+                    "gas_price": 10000000000
+                }
+            ]
+        },
+        "staking": {
+            "denom": "azeta"
+        },
+        "api": [
+            {
+                "url": "https://zetachain-mainnet.g.allthatnode.com/archive/evm",
+                "type": "evm"
+            },
+            {
+                "url": "https://zeta-chain.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://zetachain.blockpi.network:443/lcd/v1/public",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "https://zetachain.blockpi.network:443/rpc/v1/public",
+                "type": "tendermint-http"
+            },
+            {
+                "url": "https://zetachain-evm.blockpi.network:443/v1/rpc/public",
+                "type": "evm"
+            },
+            {
+                "url": "wss://zetachain-mainnet.g.allthatnode.com/archive/evm",
+                "type": "evm-ws"
+            },
+            {
+                "url": "https://zetachain.api.nodeshub.online:443",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "https://zetachain.rpc.nodeshub.online:443",
+                "type": "tendermint-rpc"
+            },
+            {
+                "url": "https://zetachain-mainnet.g.allthatnode.com/archive/rest",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "https://zetachain-mainnet.g.allthatnode.com/archive/tendermint",
+                "type": "tendermint-http"
+            },
+            {
+                "url": "https://zetachain-mainnet.public.blastapi.io",
+                "type": "evm"
+            },
+            {
+                "url": "wss://zetachain-mainnet.public.blastapi.io",
+                "type": "evm-ws"
+            },
+            {
+                "url": "https://zetachain-rpc.lavenderfive.com:443",
+                "type": "tendermint-rpc"
+            },
+            {
+                "url": "https://zetachain-api.lavenderfive.com:443",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "https://zetachain-grpc.lavenderfive.com:443",
+                "type": "cosmos-grpc"
+            },
+            {
+                "url": "https://zetachain-jsonrpc.lavenderfive.com:443",
+                "type": "evm"
+            },
+            {
+                "url": "https://zetachain-rpc.f5nodes.com",
+                "type": "tendermint-rpc"
+            },
+            {
+                "url": "https://zetachain-api.f5nodes.com",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "https://zetachain-grpc.f5nodes.com",
+                "type": "cosmos-grpc"
+            }
+        ]
+    },
+    "zeta_testnet": {
+        "chain_id": 7001,
+        "chain_name": "ZetaChain Testnet",
+        "chain_aliases": [
+            "athens",
+            "zetachain_testnet",
+            "zeta_chain_testnet",
+            "zeta_network_testnet",
+            "zeta-chain-testnet",
+            "zeta-network-testnet",
+            "zeta-testnet",
+            "zetachain-athens-testnet"
+        ],
+        "bech32_prefix": "zeta",
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "azeta",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "zeta",
+                        "exponent": 18
+                    }
+                ],
+                "base": "azeta",
+                "symbol": "ZETA"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://explorer.zetachain.com",
+                "tx": "/cosmos/tx/${tx}",
+                "address": "/address/${address}"
+            },
+            {
+                "type": "explorer",
+                "url": "https://zetachain-athens-3.blockscout.com",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "fees": {
+            "assets": [
+                {
+                    "denom": "azeta",
+                    "gas": 1000000,
+                    "gas_price": 80000000000
+                }
+            ]
+        },
+        "staking": {
+            "denom": "azeta"
+        },
+        "api": [
+            {
+                "url": "https://zetachain-athens.g.allthatnode.com/archive/evm",
+                "type": "evm"
+            },
+            {
+                "url": "https://zeta-chain-testnet.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://zetachain-athens-evm.blockpi.network/v1/rpc/public",
+                "type": "evm"
+            },
+            {
+                "url": "https://zetachain-athens.blockpi.network/rpc/v1/public",
+                "type": "tendermint-rpc"
+            },
+            {
+                "url": "https://zetachain-athens.blockpi.network/lcd/v1/public",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "wss://zetachain-athens.blockpi.network/rpc/v1/public/websocket",
+                "type": "tendermint-ws"
+            },
+            {
+                "url": "https://zetachain-athens.g.allthatnode.com/archive/rest",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "https://zetachain-athens.g.allthatnode.com/archive/tendermint",
+                "type": "tendermint-http"
+            },
+            {
+                "url": "https://rpc.nodejumper.io:443/zetachaintestnet",
+                "type": "tendermint-rpc"
+            },
+            {
+                "url": "https://rest.nodejumper.io/zetachaintestnet",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "https://zetachain-testnet-rpc.itrocket.net",
+                "type": "tendermint-rpc"
+            },
+            {
+                "url": "https://zetachain-testnet-api.itrocket.net",
+                "type": "cosmos-http"
+            },
+            {
+                "url": "https://zetachain-testnet-evm.itrocket.net",
+                "type": "evm"
+            },
+            {
+                "url": "https://zetachain-testnet-grpc.itrocket.net:14090",
+                "type": "cosmos-grpc"
+            }
+        ]
+    },
+    "bsc_testnet": {
+        "chain_id": 97,
+        "chain_name": "Binance Smart Chain Testnet",
+        "chain_aliases": [
+            "bsc-testnet",
+            "bsc-testnet-chain",
+            "bsc-testnet-network",
+            "bsc_testnet",
+            "bsc_testnet_chain",
+            "bsc_testnet_network"
+        ],
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "bnb",
+                        "exponent": 18
+                    }
+                ],
+                "base": "bnb",
+                "symbol": "BNB"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://testnet.bscscan.com",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "fees": {
+            "assets": [
+                {
+                    "denom": "bnb",
+                    "gas": 1000000,
+                    "gas_price": 80000000000
+                }
+            ]
+        },
+        "api": [
+            {
+                "url": "https://bsc-testnet-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://bsc-testnet.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://bsc-testnet.blockpi.network/v1/rpc/public",
+                "type": "evm"
+            },
+            {
+                "url": "https://bsc-testnet.public.blastapi.io",
+                "type": "evm"
+            },
+            {
+                "url": "wss://bsc-testnet.public.blastapi.io",
+                "type": "evm-ws"
+            },
+            {
+                "url": "https://data-seed-prebsc-1-s1.binance.org:8545",
+                "type": "evm"
+            }
+        ]
+    },
+    "sepolia_testnet": {
+        "chain_id": 11155111,
+        "chain_name": "Sepolia Testnet",
+        "chain_aliases": [
+            "sepolia",
+            "sepolia_chain",
+            "sepolia_network",
+            "sepolia-chain",
+            "sepolia-network",
+            "sepolia-testnet"
+        ],
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "wei",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "eth",
+                        "exponent": 18
+                    }
+                ],
+                "base": "eth",
+                "symbol": "ETH"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://sepolia.etherscan.io",
+                "tx": "/tx/${tx}",
+                "address": "/address/${address}"
+            }
+        ],
+        "fees": {
+            "assets": [
+                {
+                    "denom": "eth",
+                    "gas": 1000000,
+                    "gas_price": 38000000000
+                }
+            ]
+        },
+        "api": [
+            {
+                "url": "https://ethereum-sepolia-rpc.publicnode.com",
+                "type": "evm"
+            },
+            {
+                "url": "https://sepolia.drpc.org",
+                "type": "evm"
+            },
+            {
+                "url": "https://ethereum-sepolia.blockpi.network/v1/rpc/public",
+                "type": "evm"
+            }
+        ]
+    },
+    "solana_devnet": {
+        "chain_id": 901,
+        "chain_aliases": [
+            "solana_testnet",
+            "solana_devnet",
+            "solana-testnet",
+            "solana-devnet"
+        ],
+        "chain_name": "Solana Devnet",
+        "assets": [
+            {
+                "denoms": [
+                    {
+                        "denom": "lamport",
+                        "exponent": 0
+                    },
+                    {
+                        "denom": "sol",
+                        "exponent": 9
+                    }
+                ],
+                "base": "sol",
+                "symbol": "SOL"
+            }
+        ],
+        "apps": [
+            {
+                "type": "explorer",
+                "url": "https://explorer.solana.com",
+                "tx": "/tx/${tx}?cluster=devnet",
+                "address": "/address/${address}?cluster=devnet"
+            }
+        ],
+        "api": [
+            {
+                "url": "https://api.devnet.solana.com",
+                "type": "solana"
+            }
+        ]
+    }
+}

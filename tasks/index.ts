@@ -1,3 +1,5 @@
 import "./accounts"
-import "./balance"
+import "./balance-native"
 import "./block-number"
+import "./deploy"
+import "./cctx-data"

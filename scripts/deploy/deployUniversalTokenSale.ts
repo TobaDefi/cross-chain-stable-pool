@@ -7,7 +7,7 @@ import path from "path";
 import { getAddressSaver, verify } from "./utils/helpers";
 const { ethers, network } = hre;
 
-const CONTRACT_NAME = "UniversalTreasury";
+const CONTRACT_NAME = "UniversalTokenSale";
 const FILE_NAME = "deploymentAddresses";
 const PATH_TO_FILE = path.join(__dirname, `./${FILE_NAME}.json`);
 
@@ -17,7 +17,7 @@ async function deploy() {
         process.env.npm_config_network || "hardhat"
     ];
 
-    const args = config.TemplateToken;
+    const args: any[] = [];
 
     console.log("\n --- Deployed data --- \n");
     console.log("* ", deployer.address, "- Deployer address");
@@ -31,6 +31,10 @@ async function deploy() {
     const deployTransaction = (await contract.deployed()).deployTransaction.wait();
 
     console.log(`Contract: \`${CONTRACT_NAME}\` is deployed to \`${contract.address}\`|\`${hre.network.name}\`.`);
+
+    const underlyingToken = await contract.UNDERLYING_TOKEN();
+    console.log(`Underlying token: \`${underlyingToken}\``);
+
     const saveAddress = getAddressSaver(PATH_TO_FILE, network.name, true);
     saveAddress(
         CONTRACT_NAME,
@@ -43,7 +47,7 @@ async function deploy() {
     );
 
     console.log("\nDeployment is completed.");
-    await verify(contract.address, []);
+    // await verify(contract.address, []);
     console.log("\nDone.");
 }
 

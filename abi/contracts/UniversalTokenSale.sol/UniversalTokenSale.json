@@ -1,0 +1,16 @@
+[
+  "constructor()",
+  "error InvalidAmount(uint256)",
+  "error OwnableInvalidOwner(address)",
+  "error OwnableUnauthorizedAccount(address)",
+  "error Unauthorized()",
+  "event OwnershipTransferred(address indexed,address indexed)",
+  "function GATEWAY() view returns (address)",
+  "function UNDERLYING_TOKEN() view returns (address)",
+  "function onCall(tuple(bytes,address,uint256),address,uint256,bytes)",
+  "function owner() view returns (address)",
+  "function renounceOwnership()",
+  "function sweep(address,address,uint256)",
+  "function sweepAll(address,address)",
+  "function transferOwnership(address)"
+]

@@ -7,7 +7,7 @@
     "scripts": {
         "clean": "npx shx rm -rf artifacts cache coverage coverage.json && npx shx echo Cleaned",
         "clean-oz": "npx shx rm -rf .openzeppelin && npx shx echo Cleaned",
-        "compile": "npx hardhat compile",
+        "compile": "npx hardhat compile && npx hardhat typechain",
         "compile-all": "npx hardhat compile --force",
         "compile-4g": "npx hardhat --max-memory 4096 compile",
         "coverage": "npx hardhat coverage --testfiles test/unit/*.ts",
@@ -48,6 +48,7 @@
         "@types/config": "^3.3.5",
         "@typescript-eslint/eslint-plugin": "^5.41.0",
         "@typescript-eslint/parser": "^5.41.0",
+        "axios": "^1.10.0",
         "config": "^3.3.12",
         "dotenv": "^16.0.3",
         "eslint": "^8.26.0",

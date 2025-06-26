@@ -39,6 +39,8 @@ import "@openzeppelin/hardhat-upgrades";
 import "hardhat-dependency-compiler"; // See the comment for the field `dependencyCompiler` in `config`.
 import "solidity-docgen"; // The tool by OpenZeppelin to generate documentation for contracts in the Markdown format.
 
+import "./tasks";
+
 // See `README.md` for details.
 
 /*
@@ -100,7 +102,8 @@ const config: HardhatUserConfig = {
                         enabled: ENABLED_OPTIMIZER,
                         runs: OPTIMIZER_RUNS
                     },
-                    evmVersion: "cancun",
+                    // evmVersion: "cancun",
+                    evmVersion: "london",
                     outputSelection: {
                         "*": {
                             "*": ["storageLayout", "abi", "evm.bytecode", "evm.deployedBytecode"]
@@ -110,7 +113,7 @@ const config: HardhatUserConfig = {
             },
         ]
     },
-    defaultNetwork: "hardhat",
+    defaultNetwork: "zeta_testnet",
     networks: {
         hardhat: {
             chains: {
@@ -181,6 +184,21 @@ const config: HardhatUserConfig = {
             chainId: 11155111,
             url: "https://1rpc.io/sepolia",
             accounts: [...MAINNET_KEYS]
+        },
+        "bsc_testnet": {
+            accounts: [...MAINNET_KEYS],
+            chainId: 97,
+            url: "https://bsc-testnet-rpc.publicnode.com"
+        },
+        "zeta_testnet": {
+            chainId: 7001,
+            url: "https://zetachain-athens.g.allthatnode.com/archive/evm",
+            accounts: [...MAINNET_KEYS]
+        },
+        "zeta_mainnet": {
+            chainId: 7000,
+            url: "https://zetachain-evm.blockpi.network/v1/rpc/public",
+            accounts: [...MAINNET_KEYS]
         }
     },
     contractSizer: {
@@ -222,9 +240,27 @@ const config: HardhatUserConfig = {
             polygon: process.env.POLYGON_API_KEY || "",
             arbitrumOne: process.env.ARBITRUM_API_KEY || "",
             base: process.env.BASE_API_KEY || "",
-            optimisticEthereum: process.env.OPTIMISM_API_KEY || ""
+            optimisticEthereum: process.env.OPTIMISM_API_KEY || "",
+            zeta_mainnet: process.env.ZETA_API_KEY || "",
+            zeta_testnet: process.env.ZETA_API_KEY || ""
         },
         customChains: [
+            {
+                chainId: 7001,
+                network: "zeta_testnet",
+                urls: {
+                    apiURL: "https://zetachain-testnet.blockscout.com/api",
+                    browserURL: "https://zetachain-testnet.blockscout.com",
+                },
+            },
+            {
+                chainId: 7000,
+                network: "zeta_mainnet",
+                urls: {
+                    apiURL: "https://zetachain.blockscout.com/api",
+                    browserURL: "https://zetachain.blockscout.com",
+                },
+            },
             {
                 network: "base",
                 chainId: 8453,
