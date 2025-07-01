@@ -23,8 +23,8 @@
                 "chainId": 7001
             },
             "UniversalTokenSale": {
-                "address": "0xab185b643FF5e46eF0699bdD0AbF33Bf2552B216",
-                "deployedBlock": 11097477,
+                "address": "0x65499569f3fFF05F3cA0e187FFcE663D35e7A28a",
+                "deployedBlock": 11208773,
                 "chainId": 7001
             },
             "UToken": {

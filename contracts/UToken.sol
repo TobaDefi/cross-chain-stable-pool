@@ -12,6 +12,7 @@ contract UToken is ERC20, Ownable {
     }
 
     function burn(address from, uint256 amount) external onlyOwner {
+        _spendAllowance(from, msg.sender, amount);
         _burn(from, amount);
     }
 }

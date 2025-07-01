@@ -47,15 +47,22 @@ const GATEWAY_ADDRESSES: { [key: string]: string } = {
 // const TOKEN_SALE_ADDRESS = "0xab185b643FF5e46eF0699bdD0AbF33Bf2552B216"; // old address
 // const TOKEN_SALE_ADDRESS = "0x5f73BDCf848D7d73750DF1643E0104ce184AC142"; // old address
 // const TOKEN_SALE_ADDRESS = "0xb98462f09ADDd2946BE1138B4079D995bd229782"; // old address
-// const TOKEN_SALE_ADDRESS = "0x914d061Ec7A9aE41b00b7d499972E48eB9013883"; // old address
 // const TOKEN_SALE_ADDRESS = "0x9Aa72e1d4Bd713863b4a5e2f397aa8eD70b7c1C1"; // old address
 // const TOKEN_SALE_ADDRESS = "0xbc0eF5E01bD68b239445cAD15A3Dd6824969138a"; // old address
 // const TOKEN_SALE_ADDRESS = "0x2b36a96c9E7177A4536C1cB9A50Fbc9f8D9A77E2"; // old address
 const TOKEN_SALE_ADDRESS = "0x65499569f3fFF05F3cA0e187FFcE663D35e7A28a";
 
+const UTOKEN_ADDRESS = "0x1902ff7f61aa1d4E4c3e90c472A3b838F54ca10d";
+
+
 // ZRC20 on ZetaChain for Native Tokens
 const ZRC20_BNB_ADDRESS = "0xd97B1de3619ed2c6BEb3860147E30cA8A7dC9891";
 const ZRC20_ETH_ADDRESS = "0x05BA149A7bd6dC1F937fA9046A9e05C05f3b18b0";
+
+const ZRC20_ADDRESSES: { [key: string]: string } = {
+    BSC: ZRC20_BNB_ADDRESS,
+    ETH: ZRC20_ETH_ADDRESS,
+};
 
 // Connect to networks
 const ethProvider = new ethers.providers.JsonRpcProvider(TESTNET_ETH_URL);
@@ -78,10 +85,9 @@ const wallets: { [key: string]: Wallet } = {
     ETH: walletOnEth,
 };
 
-const currentNetwork = "ETH"; // Can be "BSC", or "ETH"
-
+const network = "ZETA"; 
 // All wallets to connect by one private key
-const userAddress = wallets[currentNetwork].address;
+const userAddress = wallets[network].address;
 
 async function main() {
     console.log(`User address: ${userAddress}\n`);
@@ -92,65 +98,32 @@ async function main() {
 
     // Connect to the UniversalTokenSale contract
     const tokenSaleContract = UniversalTokenSale__factory.connect(TOKEN_SALE_ADDRESS, zetaProvider);
-    // Connect to the Gateway contracts for BSC
-    const gatewayBscContract = GatewayEVM__factory.connect(GATEWAY_BSC_ADDRESS, bscProvider);
-    // Connect to the Gateway contracts for Ethereum
-    const gatewayEthContract = GatewayEVM__factory.connect(GATEWAY_ETH_ADDRESS, ethProvider);
 
-    const gatewayEvmContracts: { [key: string]: GatewayEVM } = {
-        BSC: gatewayBscContract,
-        ETH: gatewayEthContract,
-    };
+    // Connect to the UToken contract
+    const uTokenContract = UToken__factory.connect(UTOKEN_ADDRESS, zetaProvider);
 
-    /*
-    /// @notice Struct containing revert options
-    /// @param revertAddress Address to receive revert.
-    /// @param callOnRevert Flag if onRevert hook should be called.
-    /// @param abortAddress Address to receive funds if aborted.
-    /// @param revertMessage Arbitrary data sent back in onRevert.
-    /// @param onRevertGasLimit Gas limit for revert tx, unused on GatewayZEVM methods
-    struct RevertOptions {
-        address revertAddress;
-        bool callOnRevert;
-        address abortAddress;
-        bytes revertMessage;
-        uint256 onRevertGasLimit;
-    }
-    */
-    // For this logic, we will use a completely empty structure.
-    const revertOptions = {
-        revertAddress: AddressZero, // << If set to AddressZero, the revert amount will be sent to the user address
-        callOnRevert: false,
-        abortAddress: AddressZero,
-        revertMessage: HashZero, // << Or "0x" for empty message
-        onRevertGasLimit: Zero // 
-    };
+    const tokenSymbol = await uTokenContract.symbol();
+    const tokenDecimals = await uTokenContract.decimals();
 
-    const depositAmount = parseEther("0.0001"); // Amount of ETH to deposit
-
-    /*
-    Encode the message to be sent
-    For example, we can send the user address and the deposit amount
-    const message = ethers.utils.defaultAbiCoder.encode(
-        ["address", "uint256"],
-        [userAddress, depositAmount]
-    );
-    */
-    // For this logic, we will use a completely empty message.
-    const message = "0x";
-
-    // Check balance of the UniversalTokenSale contract on ZetaChain network after the deposit
-    const userBalanceBefore = await providers[currentNetwork].getBalance(wallets[currentNetwork].address);
-    console.log(`User balance before deposit: ${formatEther(userBalanceBefore)} ${nativeTokenSymbols[currentNetwork]}`);
+    const userNativeTokenBalanceBefore = await providers[network].getBalance(userAddress);
+    console.log(`User native token balance before sale: ${formatEther(userNativeTokenBalanceBefore)} ${nativeTokenSymbols[network]}`);
 
 
-    // Deposit and call the UniversalTokenSale contract on ZetaChain
-    const tx = await gatewayEvmContracts[currentNetwork].connect(wallets[currentNetwork])["depositAndCall(address,bytes,(address,bool,address,bytes,uint256))"](
-        TOKEN_SALE_ADDRESS,
-        message,
-        revertOptions,
+    // Check user's token balance before the sale
+    const userTokenBalanceBefore = await uTokenContract.balanceOf(userAddress);
+    console.log(`User token balance before sale: ${formatUnits(userTokenBalanceBefore, tokenDecimals)} ${tokenSymbol}`);
+
+    // Approve the UniversalTokenSale contract to spend user's tokens
+    const approveTx = await uTokenContract.connect(walletOnZeta).approve(TOKEN_SALE_ADDRESS, userTokenBalanceBefore);
+    await approveTx.wait();
+
+    const saleAmount = userTokenBalanceBefore;
+
+    // Sale UToken on ZetaChain to the external network (e.g., ETH or BSC)
+    const tx = await tokenSaleContract.connect(walletOnZeta)["saleUToken(uint256)"](
+        saleAmount,
         {
-            value: depositAmount,
+            gasLimit: 1000000,
         }
     );
 
@@ -159,9 +132,12 @@ async function main() {
     // You can use the hardhat task `npx hardhat cctx-data --hash <tx.hash>` or watched how to get CCTX data in the file `getCctxData.ts`
     console.log(`\n✅ Transaction hash: ${tx.hash}\n`);
 
-    // Check balance of the UniversalTokenSale contract on ZetaChain network after the deposit
-    const userBalanceAfter = await providers[currentNetwork].getBalance(userAddress);
-    console.log(`User balance after deposit: ${formatEther(userBalanceAfter)} ${nativeTokenSymbols[currentNetwork]}`);
+    // Check user's token balance after the sale
+    const userTokenBalanceAfter = await uTokenContract.balanceOf(userAddress);
+    console.log(`User token balance after sale:  ${formatUnits(userTokenBalanceAfter, tokenDecimals)} ${tokenSymbol}`);
+
+    const userNativeTokenBalanceAfter = await providers[network].getBalance(userAddress);
+    console.log(`User native token balance after sale: ${formatEther(userNativeTokenBalanceAfter)} ${nativeTokenSymbols[network]}`);
 
 }
 

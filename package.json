@@ -48,6 +48,7 @@
         "@types/config": "^3.3.5",
         "@typescript-eslint/eslint-plugin": "^5.41.0",
         "@typescript-eslint/parser": "^5.41.0",
+        "@zetachain/toolkit": "^13.0.0-rc17",
         "axios": "^1.10.0",
         "config": "^3.3.12",
         "dotenv": "^16.0.3",
