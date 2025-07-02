@@ -1,0 +1,16 @@
+[
+  "constructor()",
+  "error OwnableInvalidOwner(address)",
+  "error OwnableUnauthorizedAccount(address)",
+  "error Unauthorized()",
+  "event LiquidityAdded(address indexed,address indexed,uint256)",
+  "event LiquidityRemoved(address indexed,address indexed,uint256,bool)",
+  "event OwnershipTransferred(address indexed,address indexed)",
+  "function GATEWAY() view returns (address)",
+  "function addLiquidity(tuple(address,uint256))",
+  "function onCall(tuple(bytes,address,uint256),address,uint256,bytes)",
+  "function owner() view returns (address)",
+  "function removeLiquidity(tuple(address,uint256),bool)",
+  "function renounceOwnership()",
+  "function transferOwnership(address)"
+]

@@ -16,9 +16,10 @@ contract UniversalTokenSale is UniversalContract, Ownable {
     /// @notice Parameters for the revert message when a revert triggers on the destination chain.
     struct RevertMessageParams {
         address sender;
+        address targetToken;
+        uint256 out;
         address gasZRC20;
         uint256 gasFee;
-        uint256 out;
     }
 
     /// -------------------- Storage --------------------
@@ -135,6 +136,12 @@ contract UniversalTokenSale is UniversalContract, Ownable {
         emit BuyUToken(sender, zrc20, amount, WZeta, paymentAmount, convertedAmount);
     }
 
+    /**
+     * @notice Sells UToken for a target token and withdraws to the external chain.
+     * @param amount The amount of UToken to sell.
+     * @param targetToken The address of the target token to receive in exchange for UToken.
+     * @dev The external network will be determined according to the specified token.
+     */
     function saleUToken(uint256 amount, address targetToken) external {
         if (amount == 0) {
             revert InvalidAmount(amount);
@@ -143,7 +150,7 @@ contract UniversalTokenSale is UniversalContract, Ownable {
 
         UNDERLYING_TOKEN.burn(sender, amount);
 
-        (uint256 out, address gasZRC20, uint256 gasFee) = handleGasAndSwap(WZeta, amount, targetToken);
+        (uint256 out, address gasZRC20, uint256 gasFee) = _handleGasAndSwap(WZeta, amount, targetToken);
         // Emit the TokenSwap event for the debugging purpose
         emit TokenSwap(address(this), address(this), WZeta, targetToken, amount, out);
 
@@ -151,11 +158,16 @@ contract UniversalTokenSale is UniversalContract, Ownable {
             revert InvalidAmount(out);
         }
 
-        withdraw(abi.encodePacked(sender), gasFee, gasZRC20, out);
+        _withdraw(abi.encodePacked(sender), targetToken, out, gasZRC20, gasFee);
 
         emit SaleUToken(sender, amount, targetToken, out, gasFee);
     }
 
+    /**
+     * @notice Sells UToken for WZeta.
+     * @param amount The amount of UToken to sell.
+     * @dev This function allows users to sell UToken for WZeta.
+     */
     function saleUToken(uint256 amount) external {
         if (amount == 0) {
             revert InvalidAmount(amount);
@@ -170,24 +182,103 @@ contract UniversalTokenSale is UniversalContract, Ownable {
     }
 
     /**
+     * @notice onRevert handles an edge-case when a swap fails when the recipient
+     * on the destination chain is a contract that cannot accept tokens.
+     */
+    function onRevert(RevertContext calldata context) external onlyGateway {
+        RevertMessageParams memory params = abi.decode(context.revertMessage, (RevertMessageParams));
+
+        address senderAddress = params.sender;
+        if (params.targetToken == params.gasZRC20) {
+            uint256 amount = params.gasFee + params.out;
+
+            uint256 currentBalance = IZRC20(params.targetToken).balanceOf(address(this));
+            if (currentBalance < amount) {
+                amount = currentBalance;
+            }
+            IZRC20(params.targetToken).transfer(senderAddress, amount);
+        } else {
+            uint256 amountTarget = params.out;
+            uint256 currentBalanceTarget = IZRC20(params.targetToken).balanceOf(address(this));
+            if (currentBalanceTarget < amountTarget) {
+                amountTarget = currentBalanceTarget;
+            }
+            IZRC20(params.targetToken).transfer(senderAddress, amountTarget);
+
+            uint256 amountGas = params.gasFee;
+            uint256 currentBalanceGas = IZRC20(params.gasZRC20).balanceOf(address(this));
+            if (currentBalanceGas < amountGas) {
+                amountGas = currentBalanceGas;
+            }
+            IZRC20(params.gasZRC20).transfer(senderAddress, amountGas);
+        }
+    }
+
+    /**
+     * @notice Sweeps a specific amount of tokens from the contract to the recipient.
+     * @param recipient The address to receive the tokens.
+     * @param token The token to sweep.
+     * @param amount The amount of tokens to sweep.
+     * @dev Only the owner can call this function.
+     */
+    function sweep(address recipient, IZRC20 token, uint256 amount) external onlyOwner {
+        if (amount > token.balanceOf(address(this))) {
+            revert InvalidAmount(amount);
+        }
+
+        token.transfer(recipient, amount);
+    }
+
+    /**
+     * @notice Sweeps all tokens of a specific type from the contract to the recipient.
+     * @param recipient The address to receive the tokens.
+     * @param token The token to sweep.
+     * @dev Only the owner can call this function.
+     */
+    function sweepAll(address recipient, IZRC20 token) external onlyOwner {
+        uint256 amount = token.balanceOf(address(this));
+        if (amount == 0) {
+            revert InvalidAmount(amount);
+        }
+
+        token.transfer(recipient, amount);
+    }
+
+    /**
      * @notice Transfer tokens to the recipient on ZetaChain or withdraw to a connected chain
      */
-    function withdraw(bytes memory sender, uint256 gasFee, address gasZRC20, uint256 out) internal {
-        if (!IZRC20(gasZRC20).approve(address(GATEWAY), out + gasFee)) {
-            revert ApprovalFailed();
+    function _withdraw(
+        bytes memory sender,
+        address targetToken,
+        uint256 out,
+        address gasZRC20,
+        uint256 gasFee
+    ) internal {
+        if (gasZRC20 == targetToken) {
+            if (!IZRC20(gasZRC20).approve(address(GATEWAY), out + gasFee)) {
+                revert ApprovalFailed();
+            }
+        } else {
+            if (!IZRC20(gasZRC20).approve(address(GATEWAY), gasFee)) {
+                revert ApprovalFailed();
+            }
+            if (!IZRC20(targetToken).approve(address(GATEWAY), out)) {
+                revert ApprovalFailed();
+            }
         }
 
         RevertMessageParams memory params = RevertMessageParams({
             sender: _bytesToAddress(sender),
+            targetToken: targetToken,
+            out: out,
             gasZRC20: gasZRC20,
-            gasFee: gasFee,
-            out: out
+            gasFee: gasFee
         });
 
         GATEWAY.withdraw(
             sender,
             out,
-            gasZRC20,
+            targetToken,
             RevertOptions({
                 revertAddress: address(this),
                 callOnRevert: true,
@@ -198,23 +289,13 @@ contract UniversalTokenSale is UniversalContract, Ownable {
         );
     }
 
-    function sweep(address recipient, IZRC20 token, uint256 amount) external onlyOwner {
-        if (amount > token.balanceOf(address(this))) {
-            revert InvalidAmount(amount);
-        }
-
-        token.transfer(recipient, amount);
-    }
-
-    function sweepAll(address recipient, IZRC20 token) external onlyOwner {
-        uint256 amount = token.balanceOf(address(this));
-        if (amount == 0) {
-            revert InvalidAmount(amount);
-        }
-
-        token.transfer(recipient, amount);
-    }
-
+    /**
+     * @notice Converts the token amount from one token to another based on their decimals.
+     * @param amount The amount of the token to convert.
+     * @param fromToken The address of the token being converted from.
+     * @param toToken The address of the token being converted to.
+     * @return The converted amount in the target token's decimals.
+     */
     function _convertTokenAmount(uint256 amount, address fromToken, address toToken) internal view returns (uint256) {
         uint8 fromDecimals = IZRC20Metadata(fromToken).decimals();
         uint8 toDecimals = IZRC20Metadata(toToken).decimals();
@@ -228,6 +309,11 @@ contract UniversalTokenSale is UniversalContract, Ownable {
         }
     }
 
+    /**
+     * @notice Converts bytes to an address.
+     * @param b The bytes to convert.
+     * @return addr The converted address.
+     */
     function _bytesToAddress(bytes memory b) internal pure returns (address addr) {
         require(b.length == 20, "Invalid address bytes length");
         assembly {
@@ -238,7 +324,7 @@ contract UniversalTokenSale is UniversalContract, Ownable {
     /**
      * @notice Swaps enough tokens to pay gas fees, then swaps the remainder to the target token
      */
-    function handleGasAndSwap(
+    function _handleGasAndSwap(
         address inputToken,
         uint256 amount,
         address targetToken
@@ -289,23 +375,5 @@ contract UniversalTokenSale is UniversalContract, Ownable {
         uint256[] memory amountsIn = IUniswapV2Router02(UNISWAP_ROUTER).getAmountsIn(gasFee, path);
 
         return amountsIn[0];
-    }
-
-    /**
-     * @notice onRevert handles an edge-case when a swap fails when the recipient
-     * on the destination chain is a contract that cannot accept tokens.
-     */
-    function onRevert(RevertContext calldata context) external onlyGateway {
-        RevertMessageParams memory params = abi.decode(context.revertMessage, (RevertMessageParams));
-
-        address senderAddress = params.sender;
-        uint256 amount = params.gasFee + params.out;
-
-        uint256 currentBalance = IZRC20(params.gasZRC20).balanceOf(address(this));
-        if (currentBalance < amount) {
-            amount = currentBalance;
-        }
-
-        IZRC20(params.gasZRC20).transfer(senderAddress, amount);
     }
 }

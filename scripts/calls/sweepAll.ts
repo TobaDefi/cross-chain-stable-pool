@@ -64,9 +64,6 @@ const ZRC20_USDC_ADDRESSES: { [key: string]: string } = {
 // const TOKEN_SALE_ADDRESS = "0xD208D51a4e199fC6553926C03f3E155C30d18784"; // old address
 const TOKEN_SALE_ADDRESS = "0xbE8b5d82DDE00677cCdb9dc22071CF635d459223";
 
-const UTOKEN_ADDRESS = "0x90C5b9943E4993f0C702f1502A36E2f41fc9Ab0f";
-
-
 // ZRC20 on ZetaChain for Native Tokens
 const ZRC20_BNB_ADDRESS = "0xd97B1de3619ed2c6BEb3860147E30cA8A7dC9891";
 const ZRC20_ETH_ADDRESS = "0x05BA149A7bd6dC1F937fA9046A9e05C05f3b18b0";
@@ -98,7 +95,7 @@ const wallets: { [key: string]: Wallet } = {
     ETH: walletOnEth,
 };
 
-const externalNetwork = "ETH"; // Can be "BSC", or "ETH"
+const externalNetwork = "BSC"; // Can be "BSC", or "ETH"
 
 // All wallets to connect by one private key
 const userAddress = wallets["ZETA"].address;
@@ -106,13 +103,22 @@ const userAddress = wallets["ZETA"].address;
 async function main() {
     console.log(`User address: ${userAddress}\n`);
 
-    // Connect to ZRC20 contracts
+    // Connect to ZRC20 native token contracts
     const zrc20EthContract = ZRC20__factory.connect(ZRC20_ETH_ADDRESS, zetaProvider);
     const zrc20BnbContract = ZRC20__factory.connect(ZRC20_BNB_ADDRESS, zetaProvider);
 
-    const zrc20Contracts: { [key: string]: ZRC20 } = {
+    const ZRC20_GAS_CONTRACTS: { [key: string]: ZRC20 } = {
         ETH: zrc20EthContract,
         BSC: zrc20BnbContract,
+    };
+
+    // Connect to ZRC20 USDC contracts
+    const zrc20EthUsdcContract = ZRC20__factory.connect(ZRC20_ETH_USDC_ADDRESS, zetaProvider);
+    const zrc20BnbUsdcContract = ZRC20__factory.connect(ZRC20_BSC_USDC_ADDRESS, zetaProvider);
+
+    const ZRC20_USDC_CONTRACTS: { [key: string]: ZRC20 } = {
+        ETH: zrc20EthUsdcContract,
+        BSC: zrc20BnbUsdcContract,
     };
 
     // Connect to the UniversalTokenSale contract
@@ -123,38 +129,27 @@ async function main() {
     const WZetaSymbol = await WZetaContract.symbol();
     const WZetaDecimals = await WZetaContract.decimals();
 
-    const ZNativeSymbol = await zrc20Contracts[externalNetwork].symbol();
-    const ZNativeDecimals = await zrc20Contracts[externalNetwork].decimals();
+    const ZNativeSymbol = await ZRC20_GAS_CONTRACTS[externalNetwork].symbol();
+    const ZNativeDecimals = await ZRC20_GAS_CONTRACTS[externalNetwork].decimals();
+
+    // Set the chosen token for the sweep
+    // const currentTokenContract = ZRC20_USDC_CONTRACTS[externalNetwork];
+    const currentTokenContract = WZetaContract;
+    const tokenSymbol = await currentTokenContract.symbol();
+    const tokenDecimals = await currentTokenContract.decimals();
+
+    // Check user's token balance before the sweep
+    const userTokenBalanceBefore = await currentTokenContract.balanceOf(userAddress);
+    console.log(`User token balance before sweep:  ${formatUnits(userTokenBalanceBefore, tokenDecimals)} ${tokenSymbol}`);
+    // Check contract token balance before the sweep
+    const contractTSBalanceBefore = await currentTokenContract.balanceOf(TOKEN_SALE_ADDRESS);
+    console.log(`UniversalTokenSale contract token balance before sweep: ${formatUnits(contractTSBalanceBefore, tokenDecimals)} ${tokenSymbol}`);
 
 
-    // Connect to the UToken contract
-    const uTokenContract = UToken__factory.connect(UTOKEN_ADDRESS, zetaProvider);
-
-    const tokenSymbol = await uTokenContract.symbol();
-    const tokenDecimals = await uTokenContract.decimals();
-
-    // const userZNativeTokenBalanceBefore = await zrc20Contracts[externalNetwork].balanceOf(userAddress);
-    // console.log(`User zrc-20 native token balance before sale: ${formatUnits(userZNativeTokenBalanceBefore, ZNativeDecimals)} ${ZNativeSymbol}`);
-
-    // Check user's token balance before the sale
-    const userTokenBalanceBefore = await uTokenContract.balanceOf(userAddress);
-    console.log(`User token balance before sale: ${formatUnits(userTokenBalanceBefore, tokenDecimals)} ${tokenSymbol}`);
-
-    const contractTSBalanceBefore = await WZetaContract.balanceOf(TOKEN_SALE_ADDRESS);
-    console.log(`UniversalTokenSale contract wrapped native token balance before sale: ${formatUnits(contractTSBalanceBefore, WZetaDecimals)} ${WZetaSymbol}`);
-
-    // Approve the UniversalTokenSale contract to spend user's tokens
-    const approveTx = await uTokenContract.connect(walletOnZeta).approve(TOKEN_SALE_ADDRESS, userTokenBalanceBefore);
-    await approveTx.wait();
-    console.log(`\n✅ Transaction approval hash: ${approveTx.hash}\n`);
-
-    const saleAmount = userTokenBalanceBefore;
-
-    // Sale UToken on ZetaChain to the external network (e.g., ETH or BSC)
-    const tx = await tokenSaleContract.connect(walletOnZeta)["saleUToken(uint256,address)"](
-        saleAmount,
-        ZRC20_USDC_ADDRESSES[externalNetwork]
-        // ZRC20_ADDRESSES[externalNetwork]
+    // Sweep all tokens from the UniversalTokenSale contract to the user address
+    const tx = await tokenSaleContract.connect(walletOnZeta).sweepAll(
+        userAddress,
+        currentTokenContract.address
     );
 
     await tx.wait();
@@ -162,15 +157,12 @@ async function main() {
     // You can use the hardhat task `npx hardhat cctx-data --hash <tx.hash>` or watched how to get CCTX data in the file `getCctxData.ts`
     console.log(`\n✅ Transaction hash: ${tx.hash}\n`);
 
-    // Check user's token balance after the sale
-    const userTokenBalanceAfter = await uTokenContract.balanceOf(userAddress);
-    console.log(`User token balance after sale:  ${formatUnits(userTokenBalanceAfter, tokenDecimals)} ${tokenSymbol}`);
-
-    // const userZNativeTokenBalanceAfter = await zrc20Contracts[externalNetwork].balanceOf(userAddress);
-    // console.log(`User zrc-20 native token balance after sale: ${formatUnits(userZNativeTokenBalanceAfter, ZNativeDecimals)} ${ZNativeSymbol}`);
-
-    const contractTSBalanceAfter = await WZetaContract.balanceOf(TOKEN_SALE_ADDRESS);
-    console.log(`UniversalTokenSale contract wrapped native token balance after sale: ${formatUnits(contractTSBalanceAfter, WZetaDecimals)} ${WZetaSymbol}`);
+    // Check user's token balance after the sweep
+    const userTokenBalanceAfter = await currentTokenContract.balanceOf(userAddress);
+    console.log(`User token balance after sweep:  ${formatUnits(userTokenBalanceAfter, tokenDecimals)} ${tokenSymbol}`);
+    // Check contract token balance after the sweep
+    const contractTSBalanceAfter = await currentTokenContract.balanceOf(TOKEN_SALE_ADDRESS);
+    console.log(`UniversalTokenSale contract token balance after sweep: ${formatUnits(contractTSBalanceAfter, tokenDecimals)} ${tokenSymbol}`);
 
 }
 

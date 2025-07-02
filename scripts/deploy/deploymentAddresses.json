@@ -23,13 +23,18 @@
                 "chainId": 7001
             },
             "UniversalTokenSale": {
-                "address": "0x65499569f3fFF05F3cA0e187FFcE663D35e7A28a",
-                "deployedBlock": 11208773,
+                "address": "0xbE8b5d82DDE00677cCdb9dc22071CF635d459223",
+                "deployedBlock": 11230241,
                 "chainId": 7001
             },
             "UToken": {
                 "address": "0x773EEa2ce35E22202Efa1cFc1503Bc6E4CaE1eb6",
                 "deployedBlock": 11097477,
+                "chainId": 7001
+            },
+            "UniversalStablePool": {
+                "address": "0x50E04256c7eCC6E5905F2d5079f8148cDeD9B879",
+                "deployedBlock": 11230230,
                 "chainId": 7001
             }
         }
