@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "StorageSlotExtension",
+  "sourceName": "contracts/StorageSlotExtension.sol",
+  "abi": [],
+  "bytecode": "0x6080806040523460175760399081601c823930815050f35b5f80fdfe5f80fdfea264697066735822122022199bf59505cc3ffe43f6e206844e3723acf04ae288ab7119faf57cbe5ab9a564736f6c634300081a0033",
+  "deployedBytecode": "0x5f80fdfea264697066735822122022199bf59505cc3ffe43f6e206844e3723acf04ae288ab7119faf57cbe5ab9a564736f6c634300081a0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

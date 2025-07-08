@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "BufferHelpers",
+  "sourceName": "contracts/BufferHelpers.sol",
+  "abi": [],
+  "bytecode": "0x6080806040523460175760399081601c823930815050f35b5f80fdfe5f80fdfea264697066735822122038b41d90297fe42d5f386155823fc539f6d6be078f5d3ccd8e8f9e9524e63b8864736f6c634300081a0033",
+  "deployedBytecode": "0x5f80fdfea264697066735822122038b41d90297fe42d5f386155823fc539f6d6be078f5d3ccd8e8f9e9524e63b8864736f6c634300081a0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

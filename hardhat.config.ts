@@ -97,13 +97,13 @@ const config: HardhatUserConfig = {
             {
                 version: "0.8.26",
                 settings: {
-                    // viaIR: true,
+                    viaIR: true,
                     optimizer: {
                         enabled: ENABLED_OPTIMIZER,
                         runs: OPTIMIZER_RUNS
                     },
-                    // evmVersion: "cancun",
-                    evmVersion: "london",
+                    evmVersion: "cancun",
+                    // evmVersion: "london",
                     outputSelection: {
                         "*": {
                             "*": ["storageLayout", "abi", "evm.bytecode", "evm.deployedBytecode"]
@@ -113,7 +113,8 @@ const config: HardhatUserConfig = {
             },
         ]
     },
-    defaultNetwork: "zeta_testnet",
+    // defaultNetwork: "zeta_testnet",
+    defaultNetwork: "sepolia",
     networks: {
         hardhat: {
             chains: {
@@ -182,7 +183,8 @@ const config: HardhatUserConfig = {
         },
         sepolia: {
             chainId: 11155111,
-            url: "https://1rpc.io/sepolia",
+            // url: "https://1rpc.io/sepolia",
+            url: "https://ethereum-sepolia-rpc.publicnode.com",
             accounts: [...MAINNET_KEYS]
         },
         "bsc_testnet": {
@@ -193,6 +195,9 @@ const config: HardhatUserConfig = {
         "zeta_testnet": {
             chainId: 7001,
             url: "https://zetachain-athens.g.allthatnode.com/archive/evm",
+            // url: "https://zeta-chain-testnet.drpc.org",
+            // url: "https://zetachain-athens-evm.blockpi.network/v1/rpc/public",
+            // url: "https://zetachain-https://zetachain-testnet-evm.itrocket.net.g.allthatnode.com/archive/evm",
             accounts: [...MAINNET_KEYS]
         },
         "zeta_mainnet": {

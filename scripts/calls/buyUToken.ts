@@ -129,7 +129,7 @@ async function main() {
         onRevertGasLimit: Zero // 
     };
 
-    const depositAmount = parseEther("0.0001"); // Amount of ETH to deposit
+    const depositAmount = parseEther("0.001"); // Amount of ETH to deposit
 
     /*
     Encode the message to be sent

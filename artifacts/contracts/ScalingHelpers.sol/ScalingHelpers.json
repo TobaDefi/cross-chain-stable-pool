@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ScalingHelpers",
+  "sourceName": "contracts/ScalingHelpers.sol",
+  "abi": [],
+  "bytecode": "0x6080806040523460175760399081601c823930815050f35b5f80fdfe5f80fdfea2646970667358221220ba77b4f5f108727fd2e8e79585067ae34eb69420492dd5263a40a03d69d0bcc764736f6c634300081a0033",
+  "deployedBytecode": "0x5f80fdfea2646970667358221220ba77b4f5f108727fd2e8e79585067ae34eb69420492dd5263a40a03d69d0bcc764736f6c634300081a0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

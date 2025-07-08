@@ -1,0 +1,16 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "CodeDeployer",
+  "sourceName": "contracts/CodeDeployer.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "CodeDeploymentFailed",
+      "type": "error"
+    }
+  ],
+  "bytecode": "0x6080806040523460175760399081601c823930815050f35b5f80fdfe5f80fdfea26469706673582212209ad84d3df28395a4ce869134be92c76de41e6b192c8378a969b3a18cc6f24a9564736f6c634300081a0033",
+  "deployedBytecode": "0x5f80fdfea26469706673582212209ad84d3df28395a4ce869134be92c76de41e6b192c8378a969b3a18cc6f24a9564736f6c634300081a0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

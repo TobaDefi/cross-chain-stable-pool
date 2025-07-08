@@ -1,0 +1,50 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "VaultStateLib",
+  "sourceName": "contracts/VaultStateLib.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "BUFFER_PAUSED_OFFSET",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "QUERY_DISABLED_OFFSET",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "VAULT_PAUSED_OFFSET",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080806040523460175760b59081601c823930815050f35b5f80fdfe608060405260043610156010575f80fd5b5f803560e01c8063227e492d1460665780632577aa9014604f5763434e60ca146037575f80fd5b80600319360112604c57602090604051908152f35b80fd5b5080600319360112604c5750602060405160018152f35b5f366003190112607b57602060405160028152f35b5f80fdfea26469706673582212200a9c7a89a4d15eefc211f208ec79b48139855e65d79770539282f16bd9b05f6164736f6c634300081a0033",
+  "deployedBytecode": "0x608060405260043610156010575f80fd5b5f803560e01c8063227e492d1460665780632577aa9014604f5763434e60ca146037575f80fd5b80600319360112604c57602090604051908152f35b80fd5b5080600319360112604c5750602060405160018152f35b5f366003190112607b57602060405160028152f35b5f80fdfea26469706673582212200a9c7a89a4d15eefc211f208ec79b48139855e65d79770539282f16bd9b05f6164736f6c634300081a0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

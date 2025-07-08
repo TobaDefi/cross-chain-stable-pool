@@ -8,7 +8,7 @@ import { getAddressSaver, verify } from "./utils/helpers";
 const { ethers, network } = hre;
 
 const CONTRACT_NAME = "UniversalStablePool";
-const FILE_NAME = "deploymentAddresses";
+const FILE_NAME = "deployment-contract-addrs";
 const PATH_TO_FILE = path.join(__dirname, `./${FILE_NAME}.json`);
 
 async function deploy() {

@@ -1,0 +1,36 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "LogExpMath",
+  "sourceName": "contracts/LogExpMath.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "BaseOutOfBounds",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ExponentOutOfBounds",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidExponent",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OutOfBounds",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ProductOutOfBounds",
+      "type": "error"
+    }
+  ],
+  "bytecode": "0x6080806040523460175760399081601c823930815050f35b5f80fdfe5f80fdfea2646970667358221220bffe7c1b8ae7ee8bed01d57fee4951166e3f964b7ae66eb6bb09acde56d8b80a64736f6c634300081a0033",
+  "deployedBytecode": "0x5f80fdfea2646970667358221220bffe7c1b8ae7ee8bed01d57fee4951166e3f964b7ae66eb6bb09acde56d8b80a64736f6c634300081a0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
