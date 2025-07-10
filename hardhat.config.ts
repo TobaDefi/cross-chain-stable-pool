@@ -102,8 +102,8 @@ const config: HardhatUserConfig = {
                         enabled: ENABLED_OPTIMIZER,
                         runs: OPTIMIZER_RUNS
                     },
-                    evmVersion: "cancun",
-                    // evmVersion: "london",
+                    // evmVersion: "cancun",
+                    evmVersion: "london",
                     outputSelection: {
                         "*": {
                             "*": ["storageLayout", "abi", "evm.bytecode", "evm.deployedBytecode"]
