@@ -3,12 +3,9 @@ dotenv.config();
 
 import { BigNumber, ethers, Wallet } from "ethers";
 const { parseEther, parseUnits, formatEther, formatUnits, solidityPack } = ethers.utils;
-const { Zero, AddressZero, HashZero } = ethers.constants;
-
 
 import { UniversalTokenSale__factory, UToken__factory } from "../../typechain-types";
 import { GatewayEVM, GatewayEVM__factory, ZRC20, ZRC20__factory } from "../../test/helpers/types/contracts";
-
 
 const PRIVATE_KEY: string = process.env.MAINNET_KEYS || "";
 

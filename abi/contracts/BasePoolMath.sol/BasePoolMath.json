@@ -1,0 +1,4 @@
+[
+  "error InvariantRatioAboveMax(uint256,uint256)",
+  "error InvariantRatioBelowMin(uint256,uint256)"
+]

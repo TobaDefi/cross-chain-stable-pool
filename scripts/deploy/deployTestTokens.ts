@@ -14,7 +14,6 @@ const NUM_TOKENS = 3; // Number of tokens to deploy
 
 async function deploy() {
     const [deployer] = await ethers.getSigners();
-    // const config = nodeConfig.util.toObject(nodeConfig.get("networks"))[network.name];
 
     console.log("\n --- Deployed data --- \n");
     console.log("* ", deployer.address, "- Deployer address");

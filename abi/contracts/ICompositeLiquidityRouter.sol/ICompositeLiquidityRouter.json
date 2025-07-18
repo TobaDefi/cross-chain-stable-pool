@@ -1,0 +1,9 @@
+[
+  "error WrongTokensOut(address[],address[])",
+  "function addLiquidityProportionalToERC4626Pool(address,bool[],uint256[],uint256,bool,bytes) payable returns (address[], uint256[])",
+  "function addLiquidityUnbalancedToERC4626Pool(address,bool[],uint256[],uint256,bool,bytes) payable returns (uint256)",
+  "function queryAddLiquidityProportionalToERC4626Pool(address,bool[],uint256,address,bytes) returns (address[], uint256[])",
+  "function queryAddLiquidityUnbalancedToERC4626Pool(address,bool[],uint256[],address,bytes) returns (uint256)",
+  "function queryRemoveLiquidityProportionalFromERC4626Pool(address,bool[],uint256,address,bytes) returns (address[], uint256[])",
+  "function removeLiquidityProportionalFromERC4626Pool(address,bool[],uint256,uint256[],bool,bytes) payable returns (address[], uint256[])"
+]

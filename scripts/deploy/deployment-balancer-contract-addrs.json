@@ -26,6 +26,16 @@
                 "address": "0x19288FB03a9ED741568eDF0898910CbCa1C7Ed86",
                 "deployedBlock": 8726551,
                 "chainId": 11155111
+            },
+            "CompositeLiquidityRouter": {
+                "address": "0x2c052031eC46Bc6f1Fa79c52Ad3B5F59A5BFBA17",
+                "deployedBlock": 8769196,
+                "chainId": 11155111
+            },
+            "Router": {
+                "address": "0xfF518a7211C9fC44D450858d301a570935F73BBd",
+                "deployedBlock": 8783027,
+                "chainId": 11155111
             }
         }
     }

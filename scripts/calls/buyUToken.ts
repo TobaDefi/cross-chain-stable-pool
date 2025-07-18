@@ -84,10 +84,10 @@ const wallets: { [key: string]: Wallet } = {
 const currentNetwork = "ETH"; // Can be "BSC", or "ETH"
 
 // All wallets to connect by one private key
-const userAddress = wallets[currentNetwork].address;
+const userWallet = wallets[currentNetwork];
 
 async function main() {
-    console.log(`User address: ${userAddress}\n`);
+    console.log(`User address: ${userWallet.address}\n`);
 
     // Connect to ZRC20 contracts
     const zrc20EthContract = ZRC20__factory.connect(ZRC20_ETH_ADDRESS, zetaProvider);
@@ -163,7 +163,7 @@ async function main() {
     console.log(`\n✅ Transaction hash: ${tx.hash}\n`);
 
     // Check balance of the UniversalTokenSale contract on ZetaChain network after the deposit
-    const userBalanceAfter = await providers[currentNetwork].getBalance(userAddress);
+    const userBalanceAfter = await providers[currentNetwork].getBalance(userWallet.address);
     console.log(`User balance after deposit: ${formatEther(userBalanceAfter)} ${nativeTokenSymbols[currentNetwork]}`);
 
 }

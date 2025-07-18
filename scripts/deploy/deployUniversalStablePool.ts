@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import nodeConfig from "config";
 import hre from "hardhat";
 import path from "path";
 import { getAddressSaver, verify } from "./utils/helpers";
@@ -13,9 +12,6 @@ const PATH_TO_FILE = path.join(__dirname, `./${FILE_NAME}.json`);
 
 async function deploy() {
     const [deployer] = await ethers.getSigners();
-    const config = nodeConfig.util.toObject(nodeConfig.get("deploymentParams"))[
-        process.env.npm_config_network || "hardhat"
-    ];
 
     const args: any[] = [];
 

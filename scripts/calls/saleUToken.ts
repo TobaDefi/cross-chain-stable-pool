@@ -3,12 +3,9 @@ dotenv.config();
 
 import { BigNumber, ethers, Wallet } from "ethers";
 const { parseEther, parseUnits, formatEther, formatUnits, solidityPack } = ethers.utils;
-const { Zero, AddressZero, HashZero } = ethers.constants;
-
 
 import { UniversalTokenSale__factory, UToken__factory } from "../../typechain-types";
-import { GatewayEVM, GatewayEVM__factory, ZRC20__factory } from "../../test/helpers/types/contracts";
-
+import { ZRC20__factory } from "../../test/helpers/types/contracts";
 
 const PRIVATE_KEY: string = process.env.MAINNET_KEYS || "";
 
@@ -23,13 +20,13 @@ const TESTNET_ETH_URL = "https://ethereum-sepolia-rpc.publicnode.com";
 const URLs: { [key: string]: string } = {
     ZETA: TESTNET_ZETA_URL,
     BSC: TESTNET_BSC_URL,
-    ETH: TESTNET_ETH_URL,
+    ETH: TESTNET_ETH_URL
 };
 
 const nativeTokenSymbols: { [key: string]: string } = {
     ZETA: "ZETA",
     BSC: "BNB",
-    ETH: "ETH",
+    ETH: "ETH"
 };
 
 // All Gateway addresses from testnet
@@ -40,7 +37,7 @@ const GATEWAY_ETH_ADDRESS = "0x0c487a766110c85d301d96e33579c5b317fa4995";
 const GATEWAY_ADDRESSES: { [key: string]: string } = {
     ZETA: GATEWAY_ZETA_ADDRESS,
     BSC: GATEWAY_BSC_ADDRESS,
-    ETH: GATEWAY_ETH_ADDRESS,
+    ETH: GATEWAY_ETH_ADDRESS
 };
 
 // Zetachain testnet UniversalTokenSale contract address
@@ -57,14 +54,13 @@ const TOKEN_SALE_ADDRESS = "0xbE8b5d82DDE00677cCdb9dc22071CF635d459223";
 
 const UTOKEN_ADDRESS = "0x90C5b9943E4993f0C702f1502A36E2f41fc9Ab0f";
 
-
 // ZRC20 on ZetaChain for Native Tokens
 const ZRC20_BNB_ADDRESS = "0xd97B1de3619ed2c6BEb3860147E30cA8A7dC9891";
 const ZRC20_ETH_ADDRESS = "0x05BA149A7bd6dC1F937fA9046A9e05C05f3b18b0";
 
 const ZRC20_ADDRESSES: { [key: string]: string } = {
     BSC: ZRC20_BNB_ADDRESS,
-    ETH: ZRC20_ETH_ADDRESS,
+    ETH: ZRC20_ETH_ADDRESS
 };
 
 // Connect to networks
@@ -75,7 +71,7 @@ const zetaProvider = new ethers.providers.JsonRpcProvider(TESTNET_ZETA_URL);
 const providers: { [key: string]: ethers.providers.JsonRpcProvider } = {
     ZETA: zetaProvider,
     BSC: bscProvider,
-    ETH: ethProvider,
+    ETH: ethProvider
 };
 // Create a wallet instance using the private key
 const walletOnBsc = new Wallet(PRIVATE_KEY, bscProvider);
@@ -85,15 +81,15 @@ const walletOnZeta = new Wallet(PRIVATE_KEY, zetaProvider);
 const wallets: { [key: string]: Wallet } = {
     ZETA: walletOnZeta,
     BSC: walletOnBsc,
-    ETH: walletOnEth,
+    ETH: walletOnEth
 };
 
-const network = "ZETA"; 
-// All wallets to connect by one private key
-const userAddress = wallets[network].address;
+const network = "ZETA";
+// Wallets to connect by one private key
+const userWallet = wallets[network];
 
 async function main() {
-    console.log(`User address: ${userAddress}\n`);
+    console.log(`User address: ${userWallet.address}\n`);
 
     // Connect to ZRC20 contracts
     const zrc20EthContract = ZRC20__factory.connect(ZRC20_ETH_ADDRESS, zetaProvider);
@@ -108,12 +104,15 @@ async function main() {
     const tokenSymbol = await uTokenContract.symbol();
     const tokenDecimals = await uTokenContract.decimals();
 
-    const userNativeTokenBalanceBefore = await providers[network].getBalance(userAddress);
-    console.log(`User native token balance before sale: ${formatEther(userNativeTokenBalanceBefore)} ${nativeTokenSymbols[network]}`);
-
+    const userNativeTokenBalanceBefore = await providers[network].getBalance(userWallet.address);
+    console.log(
+        `User native token balance before sale: ${formatEther(userNativeTokenBalanceBefore)} ${
+            nativeTokenSymbols[network]
+        }`
+    );
 
     // Check user's token balance before the sale
-    const userTokenBalanceBefore = await uTokenContract.balanceOf(userAddress);
+    const userTokenBalanceBefore = await uTokenContract.balanceOf(userWallet.address);
     console.log(`User token balance before sale: ${formatUnits(userTokenBalanceBefore, tokenDecimals)} ${tokenSymbol}`);
 
     // Approve the UniversalTokenSale contract to spend user's tokens
@@ -123,12 +122,9 @@ async function main() {
     const saleAmount = userTokenBalanceBefore;
 
     // Sale UToken on ZetaChain to the external network (e.g., ETH or BSC)
-    const tx = await tokenSaleContract.connect(walletOnZeta)["saleUToken(uint256)"](
-        saleAmount,
-        {
-            gasLimit: 1000000,
-        }
-    );
+    const tx = await tokenSaleContract.connect(walletOnZeta)["saleUToken(uint256)"](saleAmount, {
+        gasLimit: 1000000
+    });
 
     await tx.wait();
     // Use the transaction hash to get the cross-chain transaction (CCTX) data
@@ -136,12 +132,15 @@ async function main() {
     console.log(`\n✅ Transaction hash: ${tx.hash}\n`);
 
     // Check user's token balance after the sale
-    const userTokenBalanceAfter = await uTokenContract.balanceOf(userAddress);
+    const userTokenBalanceAfter = await uTokenContract.balanceOf(userWallet.address);
     console.log(`User token balance after sale:  ${formatUnits(userTokenBalanceAfter, tokenDecimals)} ${tokenSymbol}`);
 
-    const userNativeTokenBalanceAfter = await providers[network].getBalance(userAddress);
-    console.log(`User native token balance after sale: ${formatEther(userNativeTokenBalanceAfter)} ${nativeTokenSymbols[network]}`);
-
+    const userNativeTokenBalanceAfter = await providers[network].getBalance(userWallet.address);
+    console.log(
+        `User native token balance after sale: ${formatEther(userNativeTokenBalanceAfter)} ${
+            nativeTokenSymbols[network]
+        }`
+    );
 }
 
 main().catch((error) => {

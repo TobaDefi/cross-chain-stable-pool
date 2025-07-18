@@ -26,6 +26,11 @@
                 "address": "0x8113553820dAa1F852D32C3f7D97461f09012043",
                 "deployedBlock": 8718846,
                 "chainId": 11155111
+            },
+            "TestToken_4": {
+                "address": "0xe69789eEA4DC1C87596d9ADa181B57C4141C89d6",
+                "deployedBlock": 8790255,
+                "chainId": 11155111
             }
         }
     },

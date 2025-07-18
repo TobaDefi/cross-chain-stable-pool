@@ -1,0 +1,16 @@
+[
+  "error AddressEmptyCode(address)",
+  "error ErrorSelectorNotFound()",
+  "error EthTransfer()",
+  "error FailedCall()",
+  "error InputLengthMismatch()",
+  "error InsufficientBalance(uint256,uint256)",
+  "error ReentrancyGuardReentrantCall()",
+  "error SwapDeadline()",
+  "function getPermit2() view returns (address)",
+  "function getSender() view returns (address)",
+  "function getWeth() view returns (address)",
+  "function multicall(bytes[]) payable returns (bytes[])",
+  "function permitBatchAndCall(tuple(address,address,address,uint256,uint256,uint256)[],bytes[],tuple(tuple(address,uint160,uint48,uint48)[],address,uint256),bytes,bytes[]) payable returns (bytes[])",
+  "function version() view returns (string)"
+]

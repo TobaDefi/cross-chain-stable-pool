@@ -8,6 +8,7 @@ const { Zero, AddressZero, HashZero } = ethers.constants;
 
 import { UniversalTokenSale__factory, UToken__factory } from "../../typechain-types";
 import { GatewayEVM, GatewayEVM__factory, ZRC20__factory } from "../../test/helpers/types/contracts";
+import { MaxUint256 } from "../../test/helpers";
 
 
 const PRIVATE_KEY: string = process.env.MAINNET_KEYS || "";
@@ -86,11 +87,11 @@ const wallets: { [key: string]: Wallet } = {
 
 const currentNetwork = "ETH"; // Can be "BSC", or "ETH"
 
-// All wallets to connect by one private key
-const userAddress = wallets[currentNetwork].address;
+// Wallets to connect by one private key
+const userWallet = wallets[currentNetwork];
 
 async function main() {
-    console.log(`User address: ${userAddress}\n`);
+    console.log(`User address: ${userWallet.address}\n`);
 
     // Connect to ZRC20 contracts
     const zrc20EthContract = ZRC20__factory.connect(ZRC20_ETH_ADDRESS, zetaProvider);
@@ -136,7 +137,7 @@ async function main() {
         onRevertGasLimit: Zero // 
     };
 
-    const depositAmount = parseUnits("5", usdcDecimal); // Amount of USDC to deposit
+    const depositAmount = parseUnits("0.05", usdcDecimal); // Amount of USDC to deposit
 
     /*
     Encode the message to be sent
@@ -150,13 +151,13 @@ async function main() {
     const message = "0x";
 
     // Check user balance of USDC on Ethereum before the deposit
-    const userBalanceBefore = await ethUsdcContract.balanceOf(userAddress);
+    const userBalanceBefore = await ethUsdcContract.balanceOf(userWallet.address);
     console.log(`User balance before deposit: ${formatUnits(userBalanceBefore, usdcDecimal)} ${usdcSymbol}`);
 
     // Approve the USDC on Ethereum to the Gateway contract
-    const approveTx = await ethUsdcContract.connect(wallets[currentNetwork]).approve(
+    const approveTx = await ethUsdcContract.connect(userWallet).approve(
         GATEWAY_ADDRESSES[currentNetwork],
-        depositAmount
+        MaxUint256
     );
     await approveTx.wait();
     console.log(`\n✅ Transaction approval hash: ${approveTx.hash}\n`);
@@ -170,14 +171,19 @@ async function main() {
         revertOptions
     );
 
-    await tx.wait();
+    await tx.wait(1);
     // Use the transaction hash to get the cross-chain transaction (CCTX) data
     // You can use the hardhat task `npx hardhat cctx-data --hash <tx.hash>` or watched how to get CCTX data in the file `getCctxData.ts`
     console.log(`\n✅ Transaction hash: ${tx.hash}\n`);
 
     // Check user balance of USDC on Ethereum after the deposit
-    const userBalanceAfter = await ethUsdcContract.balanceOf(userAddress);
+    const userBalanceAfter = await ethUsdcContract.balanceOf(userWallet.address);
     console.log(`User balance after deposit: ${formatUnits(userBalanceAfter, usdcDecimal)} ${usdcSymbol}`);
+
+    // // Get information about the tx
+    // const txData = await providers[currentNetwork].getTransaction(tx.);
+    // const txHash = "0x53c1a5d58edc710c68d37dcc2fbdc4891b68c2103474df3a58f59c97bc759ce3";
+    // console.log(`\n✅ Transaction data: ${JSON.stringify(txData, null, 2)}\n`);
 
 }
 

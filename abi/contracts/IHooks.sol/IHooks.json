@@ -1,0 +1,13 @@
+[
+  "function getHookFlags() view returns (tuple(bool,bool,bool,bool,bool,bool,bool,bool,bool,bool))",
+  "function onAfterAddLiquidity(address,address,uint8,uint256[],uint256[],uint256,uint256[],bytes) returns (bool, uint256[])",
+  "function onAfterInitialize(uint256[],uint256,bytes) returns (bool)",
+  "function onAfterRemoveLiquidity(address,address,uint8,uint256,uint256[],uint256[],uint256[],bytes) returns (bool, uint256[])",
+  "function onAfterSwap(tuple(uint8,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address,address,bytes)) returns (bool, uint256)",
+  "function onBeforeAddLiquidity(address,address,uint8,uint256[],uint256,uint256[],bytes) returns (bool)",
+  "function onBeforeInitialize(uint256[],bytes) returns (bool)",
+  "function onBeforeRemoveLiquidity(address,address,uint8,uint256,uint256[],uint256[],bytes) returns (bool)",
+  "function onBeforeSwap(tuple(uint8,uint256,uint256[],uint256,uint256,address,bytes),address) returns (bool)",
+  "function onComputeDynamicSwapFeePercentage(tuple(uint8,uint256,uint256[],uint256,uint256,address,bytes),address,uint256) view returns (bool, uint256)",
+  "function onRegister(address,address,tuple(address,uint8,address,bool)[],tuple(bool,bool,bool,bool)) returns (bool)"
+]

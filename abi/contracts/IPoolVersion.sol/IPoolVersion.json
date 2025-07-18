@@ -1,0 +1,3 @@
+[
+  "function getPoolVersion() view returns (string)"
+]

@@ -63,8 +63,8 @@ library StorageSlotExtension {
     function tload(AddressSlotType slot) internal view returns (address value) {
         /// @solidity memory-safe-assembly
         assembly {
-            // value := tload( slot) // @todo
-            value := sload(mload(slot))
+            value := tload( slot) // @todo
+            // value := sload(mload(slot))
         }
     }
 
@@ -72,8 +72,8 @@ library StorageSlotExtension {
     function tstore(AddressSlotType slot, address value) internal {
         /// @solidity memory-safe-assembly
         assembly {
-            // tstore(slot, value) // @todo
-            sstore(mload(slot), value)
+            tstore(slot, value) // @todo
+            // sstore(mload(slot), value)
         }
     }
 
@@ -81,8 +81,8 @@ library StorageSlotExtension {
     function tload(BooleanSlotType slot) internal view returns (bool value) {
         /// @solidity memory-safe-assembly
         assembly {
-            // value := tload(slot) // @todo
-            value := sload(mload(slot))
+            value := tload(slot) // @todo
+            // value := sload(mload(slot))
         }
     }
 
@@ -90,8 +90,8 @@ library StorageSlotExtension {
     function tstore(BooleanSlotType slot, bool value) internal {
         /// @solidity memory-safe-assembly
         assembly {
-            // tstore(slot, value) // @todo
-            sstore(mload(slot), value)
+            tstore(slot, value) // @todo
+            // sstore(mload(slot), value)
         }
     }
 
@@ -99,8 +99,8 @@ library StorageSlotExtension {
     function tload(Bytes32SlotType slot) internal view returns (bytes32 value) {
         /// @solidity memory-safe-assembly
         assembly {
-            // value := tload(slot) // @todo
-            value := sload(mload(slot))
+            value := tload(slot) // @todo
+            // value := sload(mload(slot))
         }
     }
 
@@ -108,8 +108,8 @@ library StorageSlotExtension {
     function tstore(Bytes32SlotType slot, bytes32 value) internal {
         /// @solidity memory-safe-assembly
         assembly {
-            // tstore(slot, value) // @todo
-            sstore(mload(slot), value)
+            tstore(slot, value) // @todo
+            // sstore(mload(slot), value)
         }
     }
 
@@ -117,8 +117,8 @@ library StorageSlotExtension {
     function tload(Uint256SlotType slot) internal view returns (uint256 value) {
         /// @solidity memory-safe-assembly
         assembly {
-            // value := tload(slot) // @todo
-            value := sload(mload(slot))
+            value := tload(slot) // @todo
+            // value := sload(mload(slot))
         }
     }
 
@@ -126,8 +126,8 @@ library StorageSlotExtension {
     function tstore(Uint256SlotType slot, uint256 value) internal {
         /// @solidity memory-safe-assembly
         assembly {
-            // tstore(slot, value) // @todo
-            sstore(mload(slot), value)
+            tstore(slot, value) // @todo
+            // sstore(mload(slot), value)
         }
     }
 
@@ -135,8 +135,8 @@ library StorageSlotExtension {
     function tload(Int256SlotType slot) internal view returns (int256 value) {
         /// @solidity memory-safe-assembly
         assembly {
-            // value := tload(slot) // @todo
-            value := sload(mload(slot))
+            value := tload(slot) // @todo
+            // value := sload(mload(slot))
         }
     }
 
@@ -144,8 +144,8 @@ library StorageSlotExtension {
     function tstore(Int256SlotType slot, int256 value) internal {
         /// @solidity memory-safe-assembly
         assembly {
-            // tstore(slot, value) // @todo
-            sstore(mload(slot), value)
+            tstore(slot, value) // @todo
+            // sstore(mload(slot), value)
         }
     }
 }

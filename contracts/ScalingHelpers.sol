@@ -111,20 +111,20 @@ library ScalingHelpers {
 
         // solhint-disable-next-line no-inline-assembly
         assembly ("memory-safe") {
-            // mcopy(add(to, 0x20), add(from, 0x20), mul(length, 0x20)) // @todo
-            let fromPtr := add(from, 0x20)
-            let toPtr := add(to, 0x20)
-            let end := add(fromPtr, mul(length, 0x20))
+            mcopy(add(to, 0x20), add(from, 0x20), mul(length, 0x20)) // @todo
+            // let fromPtr := add(from, 0x20)
+            // let toPtr := add(to, 0x20)
+            // let end := add(fromPtr, mul(length, 0x20))
 
-            for {
+            // for {
 
-            } lt(fromPtr, end) {
-                fromPtr := add(fromPtr, 0x20)
-                toPtr := add(toPtr, 0x20)
-            } {
-                let data := mload(fromPtr)
-                mstore(toPtr, data)
-            }
+            // } lt(fromPtr, end) {
+            //     fromPtr := add(fromPtr, 0x20)
+            //     toPtr := add(toPtr, 0x20)
+            // } {
+            //     let data := mload(fromPtr)
+            //     mstore(toPtr, data)
+            // }
         }
     }
 

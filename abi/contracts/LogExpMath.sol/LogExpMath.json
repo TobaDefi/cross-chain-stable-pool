@@ -1,0 +1,7 @@
+[
+  "error BaseOutOfBounds()",
+  "error ExponentOutOfBounds()",
+  "error InvalidExponent()",
+  "error OutOfBounds()",
+  "error ProductOutOfBounds()"
+]

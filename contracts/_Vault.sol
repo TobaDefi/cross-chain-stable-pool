@@ -2,40 +2,38 @@
 
 pragma solidity ^0.8.24;
 
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import { IERC4626 } from "@openzeppelin/contracts/interfaces/IERC4626.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Address } from "@openzeppelin/contracts/utils/Address.sol";
-import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 
-import { IProtocolFeeController } from "./IProtocolFeeController.sol";
-import { IVaultExtension } from "./IVaultExtension.sol";
-import { IPoolLiquidity } from "./IPoolLiquidity.sol";
-import { IAuthorizer } from "./IAuthorizer.sol";
-import { IVaultAdmin } from "./IVaultAdmin.sol";
-import { IVaultMain } from "./IVaultMain.sol";
-import { IBasePool } from "./IBasePool.sol";
-import { IHooks } from "./IHooks.sol";
+import {IProtocolFeeController} from "./IProtocolFeeController.sol";
+import {IVaultExtension} from "./IVaultExtension.sol";
+import {IPoolLiquidity} from "./IPoolLiquidity.sol";
+import {IAuthorizer} from "./IAuthorizer.sol";
+import {IVaultAdmin} from "./IVaultAdmin.sol";
+import {IVaultMain} from "./IVaultMain.sol";
+import {IBasePool} from "./IBasePool.sol";
+import {IHooks} from "./IHooks.sol";
 import "./VaultTypes.sol";
 
-import { StorageSlotExtension } from "./StorageSlotExtension.sol";
-import { PackedTokenBalance } from "./PackedTokenBalance.sol";
-import { ScalingHelpers } from "./ScalingHelpers.sol";
-import { CastingHelpers } from "./CastingHelpers.sol";
-import { BufferHelpers } from "./BufferHelpers.sol";
-import { InputHelpers } from "./InputHelpers.sol";
-import { FixedPoint } from "./FixedPoint.sol";
-import {
-    TransientStorageHelpers
-} from "./TransientStorageHelpers.sol";
+import {StorageSlotExtension} from "./StorageSlotExtension.sol";
+import {PackedTokenBalance} from "./PackedTokenBalance.sol";
+import {ScalingHelpers} from "./ScalingHelpers.sol";
+import {CastingHelpers} from "./CastingHelpers.sol";
+import {BufferHelpers} from "./BufferHelpers.sol";
+import {InputHelpers} from "./InputHelpers.sol";
+import {FixedPoint} from "./FixedPoint.sol";
+import {TransientStorageHelpers} from "./TransientStorageHelpers.sol";
 
-import { VaultStateLib, VaultStateBits } from "./VaultStateLib.sol";
-import { HooksConfigLib } from "./HooksConfigLib.sol";
-import { PoolConfigLib } from "./PoolConfigLib.sol";
-import { PoolDataLib } from "./PoolDataLib.sol";
-import { BasePoolMath } from "./BasePoolMath.sol";
-import { VaultCommon } from "./VaultCommon.sol";
+import {VaultStateLib, VaultStateBits} from "./VaultStateLib.sol";
+import {HooksConfigLib} from "./HooksConfigLib.sol";
+import {PoolConfigLib} from "./PoolConfigLib.sol";
+import {PoolDataLib} from "./PoolDataLib.sol";
+import {BasePoolMath} from "./BasePoolMath.sol";
+import {VaultCommon} from "./VaultCommon.sol";
 
 contract Vault is IVaultMain, VaultCommon, Proxy {
     using PackedTokenBalance for bytes32;
@@ -131,7 +129,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
 
     /// @inheritdoc IVaultMain
     function unlock(bytes calldata data) external transient returns (bytes memory result) {
-        return (msg.sender).functionCall(data);
+        return (msg.sender).functionCall(data); // @todo unlock
     }
 
     /// @inheritdoc IVaultMain
@@ -497,6 +495,20 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
             swapState.swapFeePercentage,
             locals.totalSwapFeeAmountRaw
         );
+    }
+
+    /***************************************************************************
+                                   Add New Token
+    ***************************************************************************/
+
+    function addNewToken(address pool, IERC20 token, TokenInfo memory tokenInfo) external returns (uint256 tokenIndex) {
+       // @todo: implement addNewToken and fix size-contracts
+        _poolTokens[pool].push(token);
+        _poolTokenInfo[pool][token] = tokenInfo;
+
+        tokenIndex = _poolTokens[pool].length - 1;
+
+        _poolTokenBalances[pool][tokenIndex] = PackedTokenBalance.toPackedBalance(0, 0);
     }
 
     /***************************************************************************

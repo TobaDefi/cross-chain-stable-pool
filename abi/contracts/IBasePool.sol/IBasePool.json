@@ -1,0 +1,9 @@
+[
+  "function computeBalance(uint256[],uint256,uint256) view returns (uint256)",
+  "function computeInvariant(uint256[],uint8) view returns (uint256)",
+  "function getMaximumInvariantRatio() view returns (uint256)",
+  "function getMaximumSwapFeePercentage() view returns (uint256)",
+  "function getMinimumInvariantRatio() view returns (uint256)",
+  "function getMinimumSwapFeePercentage() view returns (uint256)",
+  "function onSwap(tuple(uint8,uint256,uint256[],uint256,uint256,address,bytes)) returns (uint256)"
+]

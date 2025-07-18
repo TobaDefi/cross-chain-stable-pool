@@ -1,0 +1,4 @@
+[
+  "error SenderNotAllowed()",
+  "function getActionId(bytes4) view returns (bytes32)"
+]
