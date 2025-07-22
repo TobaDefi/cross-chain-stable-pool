@@ -67,62 +67,6 @@
     {
       "inputs": [
         {
-          "components": [
-            {
-              "internalType": "enum SwapKind",
-              "name": "kind",
-              "type": "uint8"
-            },
-            {
-              "internalType": "enum WrappingDirection",
-              "name": "direction",
-              "type": "uint8"
-            },
-            {
-              "internalType": "contract IERC4626",
-              "name": "wrappedToken",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "amountGivenRaw",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "limitRaw",
-              "type": "uint256"
-            }
-          ],
-          "internalType": "struct BufferWrapOrUnwrapParams",
-          "name": "params",
-          "type": "tuple"
-        }
-      ],
-      "name": "erc4626BufferWrapOrUnwrap",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "amountCalculatedRaw",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "amountInRaw",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "amountOutRaw",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "address",
           "name": "pool",
           "type": "address"

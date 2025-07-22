@@ -83,7 +83,7 @@ contract VaultStorage {
     mapping(address pool => PoolRoleAccounts roleAccounts) internal _poolRoleAccounts;
 
     // The hooks contracts associated with each pool.
-    mapping(address pool => IHooks hooksContract) internal _hooksContracts;
+    // mapping(address pool => IHooks hooksContract) internal _hooksContracts; // @todo: delete
 
     // The set of tokens associated with each pool.
     mapping(address pool => IERC20[] poolTokens) internal _poolTokens;

@@ -172,9 +172,9 @@ interface IVaultMain {
      * @return amountInRaw Amount of input tokens for the swap
      * @return amountOutRaw Amount of output tokens from the swap
      */
-    function erc4626BufferWrapOrUnwrap(
-        BufferWrapOrUnwrapParams memory params
-    ) external returns (uint256 amountCalculatedRaw, uint256 amountInRaw, uint256 amountOutRaw);
+    // function erc4626BufferWrapOrUnwrap( // @todo: delete
+    //     BufferWrapOrUnwrapParams memory params
+    // ) external returns (uint256 amountCalculatedRaw, uint256 amountInRaw, uint256 amountOutRaw);
 
     /*******************************************************************************
                                      Miscellaneous

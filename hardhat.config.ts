@@ -113,8 +113,8 @@ const config: HardhatUserConfig = {
             },
         ]
     },
-    // defaultNetwork: "zeta_testnet",
-    defaultNetwork: "sepolia",
+    defaultNetwork: "zeta_testnet",
+    // defaultNetwork: "sepolia",
     networks: {
         hardhat: {
             chains: {

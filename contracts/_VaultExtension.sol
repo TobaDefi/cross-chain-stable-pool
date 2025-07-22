@@ -274,55 +274,55 @@ contract VaultExtension is IVaultExtension, VaultCommon, Proxy {
             poolConfigBits = poolConfigBits.setAggregateSwapFeePercentage(aggregateSwapFeePercentage);
             poolConfigBits = poolConfigBits.setAggregateYieldFeePercentage(aggregateYieldFeePercentage);
 
-            if (params.poolHooksContract != address(0)) {
-                // If a hook address was passed, make sure that hook trusts the pool factory.
-                if (
-                    IHooks(params.poolHooksContract).onRegister(
-                        msg.sender,
-                        pool,
-                        params.tokenConfig,
-                        params.liquidityManagement
-                    ) == false
-                ) {
-                    revert HookRegistrationFailed(params.poolHooksContract, pool, msg.sender);
-                }
+            // if (params.poolHooksContract != address(0)) { // @todo: delete
+            //     // If a hook address was passed, make sure that hook trusts the pool factory.
+            //     if (
+            //         IHooks(params.poolHooksContract).onRegister(
+            //             msg.sender,
+            //             pool,
+            //             params.tokenConfig,
+            //             params.liquidityManagement
+            //         ) == false
+            //     ) {
+            //         revert HookRegistrationFailed(params.poolHooksContract, pool, msg.sender);
+            //     }
 
-                // Gets the default HooksConfig from the hook contract and saves it in the Vault state.
-                // Storing into hooksConfig first avoids stack-too-deep.
-                HookFlags memory hookFlags = IHooks(params.poolHooksContract).getHookFlags();
+            //     // Gets the default HooksConfig from the hook contract and saves it in the Vault state.
+            //     // Storing into hooksConfig first avoids stack-too-deep.
+            //     HookFlags memory hookFlags = IHooks(params.poolHooksContract).getHookFlags();
 
-                // When enableHookAdjustedAmounts == true, hooks are able to modify the result of a liquidity or swap
-                // operation by implementing an after hook. For simplicity, the Vault only supports modifying the
-                // calculated part of the operation. As such, when a hook supports adjusted amounts, it cannot support
-                // unbalanced liquidity operations, as this would introduce instances where the amount calculated is the
-                // input amount (EXACT_OUT).
-                if (
-                    hookFlags.enableHookAdjustedAmounts &&
-                    params.liquidityManagement.disableUnbalancedLiquidity == false
-                ) {
-                    revert HookRegistrationFailed(params.poolHooksContract, pool, msg.sender);
-                }
-
-                poolConfigBits = poolConfigBits.setHookAdjustedAmounts(hookFlags.enableHookAdjustedAmounts);
-                poolConfigBits = poolConfigBits.setShouldCallBeforeInitialize(hookFlags.shouldCallBeforeInitialize);
-                poolConfigBits = poolConfigBits.setShouldCallAfterInitialize(hookFlags.shouldCallAfterInitialize);
-                poolConfigBits = poolConfigBits.setShouldCallComputeDynamicSwapFee(
-                    hookFlags.shouldCallComputeDynamicSwapFee
-                );
-                poolConfigBits = poolConfigBits.setShouldCallBeforeSwap(hookFlags.shouldCallBeforeSwap);
-                poolConfigBits = poolConfigBits.setShouldCallAfterSwap(hookFlags.shouldCallAfterSwap);
-                poolConfigBits = poolConfigBits.setShouldCallBeforeAddLiquidity(hookFlags.shouldCallBeforeAddLiquidity);
-                poolConfigBits = poolConfigBits.setShouldCallAfterAddLiquidity(hookFlags.shouldCallAfterAddLiquidity);
-                poolConfigBits = poolConfigBits.setShouldCallBeforeRemoveLiquidity(
-                    hookFlags.shouldCallBeforeRemoveLiquidity
-                );
-                poolConfigBits = poolConfigBits.setShouldCallAfterRemoveLiquidity(
-                    hookFlags.shouldCallAfterRemoveLiquidity
-                );
-            }
+            //     // When enableHookAdjustedAmounts == true, hooks are able to modify the result of a liquidity or swap
+            //     // operation by implementing an after hook. For simplicity, the Vault only supports modifying the
+            //     // calculated part of the operation. As such, when a hook supports adjusted amounts, it cannot support
+            //     // unbalanced liquidity operations, as this would introduce instances where the amount calculated is the
+            //     // input amount (EXACT_OUT).
+            //     if (
+            //         hookFlags.enableHookAdjustedAmounts &&
+            //         params.liquidityManagement.disableUnbalancedLiquidity == false
+            //     ) {
+            //         revert HookRegistrationFailed(params.poolHooksContract, pool, msg.sender);
+            //     }
+            //     // @ todo: delete of functions for hooks
+            //     poolConfigBits = poolConfigBits.setHookAdjustedAmounts(hookFlags.enableHookAdjustedAmounts);
+            //     poolConfigBits = poolConfigBits.setShouldCallBeforeInitialize(hookFlags.shouldCallBeforeInitialize);
+            //     poolConfigBits = poolConfigBits.setShouldCallAfterInitialize(hookFlags.shouldCallAfterInitialize);
+            //     poolConfigBits = poolConfigBits.setShouldCallComputeDynamicSwapFee(
+            //         hookFlags.shouldCallComputeDynamicSwapFee
+            //     );
+            //     poolConfigBits = poolConfigBits.setShouldCallBeforeSwap(hookFlags.shouldCallBeforeSwap);
+            //     poolConfigBits = poolConfigBits.setShouldCallAfterSwap(hookFlags.shouldCallAfterSwap);
+            //     poolConfigBits = poolConfigBits.setShouldCallBeforeAddLiquidity(hookFlags.shouldCallBeforeAddLiquidity);
+            //     poolConfigBits = poolConfigBits.setShouldCallAfterAddLiquidity(hookFlags.shouldCallAfterAddLiquidity);
+            //     poolConfigBits = poolConfigBits.setShouldCallBeforeRemoveLiquidity(
+            //         hookFlags.shouldCallBeforeRemoveLiquidity
+            //     );
+            //     poolConfigBits = poolConfigBits.setShouldCallAfterRemoveLiquidity(
+            //         hookFlags.shouldCallAfterRemoveLiquidity
+            //     );
+            // }
 
             _poolConfigBits[pool] = poolConfigBits;
-            _hooksContracts[pool] = IHooks(params.poolHooksContract);
+            // _hooksContracts[pool] = IHooks(params.poolHooksContract); // @todo: delete
         }
 
         // Static swap fee percentage has special limits, so we don't use the library function directly.
@@ -381,28 +381,28 @@ contract VaultExtension is IVaultExtension, VaultCommon, Proxy {
             poolData.tokenRates
         );
 
-        if (poolData.poolConfigBits.shouldCallBeforeInitialize()) {
-            HooksConfigLib.callBeforeInitializeHook(exactAmountsInScaled18, userData, _hooksContracts[pool]);
-            // The before hook is reentrant, and could have changed token rates.
-            // Updating balances here is unnecessary since they're 0, but we do not special case before init
-            // for the sake of bytecode size.
-            poolData.reloadBalancesAndRates(_poolTokenBalances[pool], Rounding.ROUND_DOWN);
+        // if (poolData.poolConfigBits.shouldCallBeforeInitialize()) { // @todo: delete
+        //     HooksConfigLib.callBeforeInitializeHook(exactAmountsInScaled18, userData, _hooksContracts[pool]);
+        //     // The before hook is reentrant, and could have changed token rates.
+        //     // Updating balances here is unnecessary since they're 0, but we do not special case before init
+        //     // for the sake of bytecode size.
+        //     poolData.reloadBalancesAndRates(_poolTokenBalances[pool], Rounding.ROUND_DOWN);
 
-            // Also update `exactAmountsInScaled18`, in case the underlying rates changed.
-            exactAmountsInScaled18 = exactAmountsIn.copyToScaled18ApplyRateRoundDownArray(
-                poolData.decimalScalingFactors,
-                poolData.tokenRates
-            );
-        }
+        //     // Also update `exactAmountsInScaled18`, in case the underlying rates changed.
+        //     exactAmountsInScaled18 = exactAmountsIn.copyToScaled18ApplyRateRoundDownArray(
+        //         poolData.decimalScalingFactors,
+        //         poolData.tokenRates
+        //     );
+        // }
 
         bptAmountOut = _initialize(pool, to, poolData, tokens, exactAmountsIn, exactAmountsInScaled18, minBptAmountOut);
 
-        if (poolData.poolConfigBits.shouldCallAfterInitialize()) {
-            // `hooksContract` needed to fix stack too deep.
-            IHooks hooksContract = _hooksContracts[pool];
+        // if (poolData.poolConfigBits.shouldCallAfterInitialize()) { // @todo: delete
+        //     // `hooksContract` needed to fix stack too deep.
+        //     IHooks hooksContract = _hooksContracts[pool];
 
-            HooksConfigLib.callAfterInitializeHook(exactAmountsInScaled18, bptAmountOut, userData, hooksContract);
-        }
+        //     HooksConfigLib.callAfterInitializeHook(exactAmountsInScaled18, bptAmountOut, userData, hooksContract);
+        // }
     }
 
     function _initialize(
@@ -581,12 +581,12 @@ contract VaultExtension is IVaultExtension, VaultCommon, Proxy {
             });
     }
 
-    /// @inheritdoc IVaultExtension
-    function getHooksConfig(
-        address pool
-    ) external view onlyVaultDelegateCall withRegisteredPool(pool) returns (HooksConfig memory) {
-        return _poolConfigBits[pool].toHooksConfig(_hooksContracts[pool]);
-    }
+    // /// @inheritdoc IVaultExtension
+    // function getHooksConfig( // @todo: delete
+    //     address pool
+    // ) external view onlyVaultDelegateCall withRegisteredPool(pool) returns (HooksConfig memory) {
+    //     return _poolConfigBits[pool].toHooksConfig(_hooksContracts[pool]);
+    // }
 
     /// @inheritdoc IVaultExtension
     function getBptRate(
@@ -704,18 +704,18 @@ contract VaultExtension is IVaultExtension, VaultCommon, Proxy {
     }
 
     /// @inheritdoc IVaultExtension
-    function computeDynamicSwapFeePercentage(
-        address pool,
-        PoolSwapParams memory swapParams
-    ) external view onlyVaultDelegateCall withInitializedPool(pool) returns (uint256 dynamicSwapFeePercentage) {
-        return
-            HooksConfigLib.callComputeDynamicSwapFeeHook(
-                swapParams,
-                pool,
-                _poolConfigBits[pool].getStaticSwapFeePercentage(),
-                _hooksContracts[pool]
-            );
-    }
+    // function computeDynamicSwapFeePercentage( // @todo: delete
+    //     address pool,
+    //     PoolSwapParams memory swapParams
+    // ) external view onlyVaultDelegateCall withInitializedPool(pool) returns (uint256 dynamicSwapFeePercentage) {
+    //     return
+    //         HooksConfigLib.callComputeDynamicSwapFeeHook(
+    //             swapParams,
+    //             pool,
+    //             _poolConfigBits[pool].getStaticSwapFeePercentage(),
+    //             _hooksContracts[pool]
+    //         );
+    // }
 
     /// @inheritdoc IVaultExtension
     function getProtocolFeeController() external view onlyVaultDelegateCall returns (IProtocolFeeController) {

@@ -148,12 +148,12 @@ async function main() {
     await approveTx.wait();
     console.log(`\n✅ Transaction approval hash: ${approveTx.hash}\n`);
 
-    const saleAmount = userTokenBalanceBefore;
+    const saleAmount = userTokenBalanceBefore; // Sale half of the user's UToken balance
 
     // Sale UToken on ZetaChain to the external network (e.g., ETH or BSC)
     const tx = await tokenSaleContract.connect(walletOnZeta)["saleUToken(uint256,address)"](
         saleAmount,
-        ZRC20_USDC_ADDRESSES[externalNetwork]
+        ZRC20_USDC_ADDRESSES[externalNetwork] // ETH
         // ZRC20_ADDRESSES[externalNetwork]
     );
 

@@ -232,7 +232,7 @@ interface IVaultExtension {
      * @param pool Address of the pool
      * @return hooksConfig The hooks configuration as a `HooksConfig` struct
      */
-    function getHooksConfig(address pool) external view returns (HooksConfig memory hooksConfig);
+    // function getHooksConfig(address pool) external view returns (HooksConfig memory hooksConfig); // @todo: delete
 
     /**
      * @notice The current rate of a pool token (BPT) = invariant / totalSupply.
@@ -375,10 +375,10 @@ interface IVaultExtension {
      * @param swapParams The swap parameters used to compute the fee
      * @return dynamicSwapFeePercentage The dynamic swap fee percentage
      */
-    function computeDynamicSwapFeePercentage(
-        address pool,
-        PoolSwapParams memory swapParams
-    ) external view returns (uint256 dynamicSwapFeePercentage);
+    // function computeDynamicSwapFeePercentage( // @todo: delete
+    //     address pool,
+    //     PoolSwapParams memory swapParams
+    // ) external view returns (uint256 dynamicSwapFeePercentage);
 
     /**
      * @notice Returns the Protocol Fee Controller address.
