@@ -2,28 +2,21 @@
 
 pragma solidity ^0.8.24;
 
-import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import { ISwapFeePercentageBounds } from "./ISwapFeePercentageBounds.sol";
-import {
-    IUnbalancedLiquidityInvariantRatioBounds
-} from "./IUnbalancedLiquidityInvariantRatioBounds.sol";
-import { IBasePool } from "./IBasePool.sol";
-import { IVault } from "./IVault.sol";
-import {
-    IStablePool,
-    StablePoolDynamicData,
-    StablePoolImmutableData,
-    AmplificationState
-} from "./IStablePool.sol";
-import "./VaultTypes.sol";
+import {ISwapFeePercentageBounds} from "./common/ISwapFeePercentageBounds.sol";
+import {IUnbalancedLiquidityInvariantRatioBounds} from "./common/IUnbalancedLiquidityInvariantRatioBounds.sol";
+import {IBasePool} from "./common/IBasePool.sol";
+import {IVault} from "./common/IVault.sol";
+import {IStablePool, StablePoolDynamicData, StablePoolImmutableData, AmplificationState} from "./common/IStablePool.sol";
+import "./common/VaultTypes.sol";
 
-import { BasePoolAuthentication } from "./BasePoolAuthentication.sol";
-import { BalancerPoolToken } from "./BalancerPoolToken.sol";
-import { FixedPoint } from "./FixedPoint.sol";
-import { StableMath } from "./StableMath.sol";
-import { Version } from "./Version.sol";
-import { PoolInfo } from "./PoolInfo.sol";
+import {BasePoolAuthentication} from "./common/BasePoolAuthentication.sol";
+import {BalancerPoolToken} from "./common/BalancerPoolToken.sol";
+import {FixedPoint} from "./common/FixedPoint.sol";
+import {StableMath} from "./common/StableMath.sol";
+import {Version} from "./common/Version.sol";
+import {PoolInfo} from "./common/PoolInfo.sol";
 
 /**
  * @notice Standard Balancer Stable Pool.

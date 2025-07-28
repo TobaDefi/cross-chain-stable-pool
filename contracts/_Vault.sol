@@ -4,36 +4,38 @@ pragma solidity ^0.8.24;
 
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-// import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol"; // @todo: delete
+// import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol"; // @todo delete
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 
-import {IProtocolFeeController} from "./IProtocolFeeController.sol";
-import {IVaultExtension} from "./IVaultExtension.sol";
-import {IPoolLiquidity} from "./IPoolLiquidity.sol";
-import {IAuthorizer} from "./IAuthorizer.sol";
-import {IVaultAdmin} from "./IVaultAdmin.sol";
-import {IVaultMain} from "./IVaultMain.sol";
-import {IBasePool} from "./IBasePool.sol";
-// import {IHooks} from "./IHooks.sol"; // @todo: delete
-import "./VaultTypes.sol";
+import {IProtocolFeeController} from "./common/IProtocolFeeController.sol";
+import {IVaultExtension} from "./common/IVaultExtension.sol";
+import {IPoolLiquidity} from "./common/IPoolLiquidity.sol";
+import {IAuthorizer} from "./common/IAuthorizer.sol";
+import {IVaultAdmin} from "./common/IVaultAdmin.sol";
+import {IVaultMain} from "./common/IVaultMain.sol";
+import {IBasePool} from "./common/IBasePool.sol";
+// import {IHooks} from "./IHooks.sol"; // @todo delete
+import "./common/VaultTypes.sol";
 
-import {StorageSlotExtension} from "./StorageSlotExtension.sol";
-import {PackedTokenBalance} from "./PackedTokenBalance.sol";
-import {ScalingHelpers} from "./ScalingHelpers.sol";
-import {CastingHelpers} from "./CastingHelpers.sol";
-import {BufferHelpers} from "./BufferHelpers.sol";
-import {InputHelpers} from "./InputHelpers.sol";
-import {FixedPoint} from "./FixedPoint.sol";
-import {TransientStorageHelpers} from "./TransientStorageHelpers.sol";
+import {StorageSlotExtension} from "./common/StorageSlotExtension.sol";
+import {PackedTokenBalance} from "./common/PackedTokenBalance.sol";
+import {ScalingHelpers} from "./common/ScalingHelpers.sol";
+import {CastingHelpers} from "./common/CastingHelpers.sol";
+import {BufferHelpers} from "./common/BufferHelpers.sol";
+import {InputHelpers} from "./common/InputHelpers.sol";
+import {FixedPoint} from "./common/FixedPoint.sol";
+import {TransientStorageHelpers} from "./common/TransientStorageHelpers.sol";
 
-import {VaultStateLib, VaultStateBits} from "./VaultStateLib.sol";
-import {HooksConfigLib} from "./HooksConfigLib.sol";
-import {PoolConfigLib} from "./PoolConfigLib.sol";
-import {PoolDataLib} from "./PoolDataLib.sol";
-import {BasePoolMath} from "./BasePoolMath.sol";
-import {VaultCommon} from "./VaultCommon.sol";
+import {VaultStateLib, VaultStateBits} from "./common/VaultStateLib.sol";
+import {HooksConfigLib} from "./common/HooksConfigLib.sol";
+import {PoolConfigLib} from "./common/PoolConfigLib.sol";
+import {PoolDataLib} from "./common/PoolDataLib.sol";
+import {BasePoolMath} from "./common/BasePoolMath.sol";
+import {VaultCommon} from "./common/VaultCommon.sol";
+
+import "hardhat/console.sol";
 
 contract Vault is IVaultMain, VaultCommon, Proxy {
     using PackedTokenBalance for bytes32;
@@ -220,7 +222,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
         SwapState memory swapState = _loadSwapState(vaultSwapParams, poolData);
         PoolSwapParams memory poolSwapParams = _buildPoolSwapParams(vaultSwapParams, swapState, poolData);
 
-        // if (poolData.poolConfigBits.shouldCallBeforeSwap()) { // @todo: delete
+        // if (poolData.poolConfigBits.shouldCallBeforeSwap()) { // @todo delete
         //     HooksConfigLib.callBeforeSwapHook(
         //         poolSwapParams,
         //         vaultSwapParams.pool,
@@ -244,7 +246,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
         // At this point, the static swap fee percentage is loaded in the `swapState` as the default, to be used
         // unless the pool has a dynamic swap fee. It is also passed into the hook, to support common cases
         // where the dynamic fee computation logic uses it.
-        // if (poolData.poolConfigBits.shouldCallComputeDynamicSwapFee()) { // @todo: delete
+        // if (poolData.poolConfigBits.shouldCallComputeDynamicSwapFee()) { // @todo delete
         //     swapState.swapFeePercentage = HooksConfigLib.callComputeDynamicSwapFeeHook(
         //         poolSwapParams,
         //         vaultSwapParams.pool,
@@ -266,7 +268,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
 
         // The new amount calculated is 'amountCalculated + delta'. If the underlying hook fails, or limits are
         // violated, `onAfterSwap` will revert. Uses msg.sender as the Router (the contract that called the Vault).
-        // if (poolData.poolConfigBits.shouldCallAfterSwap()) { // @todo: delete
+        // if (poolData.poolConfigBits.shouldCallAfterSwap()) { // @todo delete
         //     // `hooksContract` needed to fix stack too deep.
         //     IHooks hooksContract = _hooksContracts[vaultSwapParams.pool];
 
@@ -500,16 +502,165 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
     /***************************************************************************
                                    Add New Token
     ***************************************************************************/
+    event NewTokenAdded(address indexed pool, address indexed token, uint256 tokenIndex);
 
-    function addNewToken(address pool, IERC20 token, TokenInfo memory tokenInfo) external returns (uint256 tokenIndex) {
-       // @todo: implement addNewToken and fix size-contracts
+    function addNewToken(
+        address pool,
+        TokenConfig memory tokenConfig,
+        uint256 initialAmount
+    ) external returns (uint256 tokenIndex, uint256 bptAmountOut /*, uint256[] memory swapFeeAmounts */) {
+        IERC20 token = tokenConfig.token;
+
+        // Add token to the pool's token array
         _poolTokens[pool].push(token);
+        TokenInfo memory tokenInfo = TokenInfo({
+            tokenType: tokenConfig.tokenType,
+            rateProvider: tokenConfig.rateProvider,
+            paysYieldFees: tokenConfig.paysYieldFees
+        });
         _poolTokenInfo[pool][token] = tokenInfo;
 
         tokenIndex = _poolTokens[pool].length - 1;
 
-        _poolTokenBalances[pool][tokenIndex] = PackedTokenBalance.toPackedBalance(0, 0);
+        // Initialize balances for the new token
+        _poolTokenBalances[pool][tokenIndex] = PackedTokenBalance.toPackedBalance(initialAmount, initialAmount);
+
+        // Transfer tokens from the user
+        token.safeTransferFrom(msg.sender, address(this), initialAmount);
+
+        // If there is initial liquidity - calculate BPT. Add if (initialAmount > 0) {} else {revert()}
+        // Load pool data for calculations
+        // NOTE: try PoolData memory poolData = _loadPoolData(pool, Rounding.ROUND_DOWN);
+        PoolData memory poolData = _loadPoolData(pool, Rounding.ROUND_DOWN);
+        // PoolData memory poolData = _loadPoolDataUpdatingBalancesAndYieldFees(pool, Rounding.ROUND_UP);
+
+        // Total number of tokens in the pool (number of assets)
+        uint256 numTokens = poolData.tokens.length;
+
+        // Array of input token amounts for BPT calculation (all zero except for the last)
+        uint256[] memory exactAmountsIn = new uint256[](numTokens);
+        exactAmountsIn[tokenIndex] = initialAmount;
+        // Do I really need to check the length of the array of all tokens or can I pass just one token that I'm adding?!
+        InputHelpers.ensureInputLengthMatch(numTokens, exactAmountsIn.length);
+
+        uint256[] memory exactAmountsInScaled18 = exactAmountsIn.copyToScaled18ApplyRateRoundDownArray(
+            poolData.decimalScalingFactors,
+            poolData.tokenRates
+        );
+
+        IERC20 actualToken = poolData.tokens[tokenIndex];
+
+        _takeDebt(actualToken, exactAmountsIn[tokenIndex]);
+        mapping(uint256 tokenIndex => bytes32 packedTokenBalance) storage poolBalances = _poolTokenBalances[pool];
+
+        poolBalances[tokenIndex] = PackedTokenBalance.toPackedBalance(
+            exactAmountsIn[tokenIndex],
+            exactAmountsInScaled18[tokenIndex]
+        );
+
+        uint256 length = exactAmountsInScaled18.length;
+        for (uint256 i = 0; i < length; i++) {
+            console.log("exactAmountsInScaled18[", i, "] = ", exactAmountsInScaled18[i]);
+        }
+
+        uint256 totalSupply_ = _totalSupply(pool);
+        exactAmountsInScaled18[tokenIndex] = 0;
+
+        // bptAmountOut = IBasePool(pool).computeInvariant(exactAmountsInScaled18, Rounding.ROUND_DOWN);
+        bptAmountOut = IBasePool(pool).computeInvariant(poolData.balancesLiveScaled18, Rounding.ROUND_DOWN);
+        // (bptAmountOut, swapFeeAmounts) = BasePoolMath.computeAddLiquidityUnbalanced(
+        //     poolData.balancesLiveScaled18,
+        //     exactAmountsInScaled18,
+        //     totalSupply_,
+        //     poolData.poolConfigBits.getStaticSwapFeePercentage(),
+        //     IBasePool(pool)
+        // );
+
+        // @todo  need to add calculation of fees for adding liquidity
+        bptAmountOut = bptAmountOut - totalSupply_; // <<< Adjust for the current total supply
+
+        console.log("bptAmountOut = ", bptAmountOut);
+        console.log("totalSupply BEFORE = ", totalSupply_);
+
+        _mint(pool, msg.sender, bptAmountOut);
+
+        console.log("totalSupply AFTER = ", _totalSupply(pool));
+
+        // -------
+        // NOTE: delete everything below
+        // // Get current totalSupply of the pool
+        // uint256 currentSupply = _totalSupply(pool);
+
+        // // Calculate current invariant without the new token
+        // uint256 currentInvariant = IBasePool(pool).computeInvariant(poolData.balancesLiveScaled18, Rounding.ROUND_DOWN);
+
+        // // Create new balance array with added token
+        // uint256[] memory newBalances = new uint256[](poolData.balancesLiveScaled18.length + 1);
+
+        // // Copy existing balances
+        // for (uint256 i = 0; i < poolData.balancesLiveScaled18.length; i++) {
+        //     newBalances[i] = poolData.balancesLiveScaled18[i];
+        // }
+
+        // // Add balance of the new token (convert to scaled18)
+        // uint256 initialAmountScaled18 = initialAmount; // Assume 18 decimals, otherwise scaling is needed
+        // newBalances[newBalances.length - 1] = initialAmountScaled18;
+
+        // // Calculate new invariant with added token
+        // uint256 newInvariant = IBasePool(pool).computeInvariant(newBalances, Rounding.ROUND_DOWN);
+
+        // // Calculate BPT: bptAmountOut = totalSupply * (newInvariant / currentInvariant - 1)
+        // if (currentInvariant > 0) {
+        //     uint256 invariantRatio = newInvariant.divDown(currentInvariant);
+        //     bptAmountOut = currentSupply.mulDown(invariantRatio - FixedPoint.ONE);
+        // } else {
+        //     // If this is the first token or pool is empty
+        //     bptAmountOut = initialAmountScaled18;
+        // }
+
+        // // Minimum BPT check
+        // if (bptAmountOut > 0) {
+        //     // Mint BPT to user
+        //     _mint(pool, msg.sender, bptAmountOut);
+        // }
+
+        // // Update balances for the new token
+        // _poolTokenBalances[pool][tokenIndex] = PackedTokenBalance.toPackedBalance(initialAmount, initialAmount);
+
+        emit NewTokenAdded(pool, address(token), tokenIndex);
     }
+
+    // function addNewToken(
+    //     address pool,
+    //     TokenConfig memory tokenConfig,
+    //     uint256 initialAmount
+    // ) external returns (uint256 tokenIndex) {
+    //     // NOTE: first implementation that adds token to pool, initializes its balance and calculates BPT (primitively)
+    //     IERC20 token = tokenConfig.token;
+
+    //     _poolTokens[pool].push(token);
+    //     TokenInfo memory tokenInfo = TokenInfo({
+    //         tokenType: tokenConfig.tokenType,
+    //         rateProvider: tokenConfig.rateProvider,
+    //         paysYieldFees: tokenConfig.paysYieldFees
+    //     });
+    //     _poolTokenInfo[pool][token] = tokenInfo;
+
+    //     tokenIndex = _poolTokens[pool].length - 1;
+
+    //     _poolTokenBalances[pool][tokenIndex] = PackedTokenBalance.toPackedBalance(0, 0);
+
+    //     token.safeTransferFrom(msg.sender, address(this), initialAmount);
+
+    //     _poolTokenBalances[pool][tokenIndex] = PackedTokenBalance.toPackedBalance(initialAmount, initialAmount);
+
+    //     // PoolData memory poolData = _loadPoolDataUpdatingBalancesAndYieldFees(pool, Rounding.ROUND_UP);
+
+    //     // uint256 bptAmountOut = initialAmount;
+    //     // _mint(pool, msg.sender, bptAmountOut);
+
+    //     emit NewTokenAdded(pool, address(token), tokenIndex);
+    // }
 
     /***************************************************************************
                                    Add Liquidity
@@ -550,7 +701,12 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
             poolData.tokenRates
         );
 
-        // if (poolData.poolConfigBits.shouldCallBeforeAddLiquidity()) { // @todo: delete
+        uint256 length = maxAmountsInScaled18.length;
+        for (uint256 i = 0; i < length; i++) {
+            console.log("maxAmountsInScaled18[", i, "] = ", maxAmountsInScaled18[i]);
+        }
+
+        // if (poolData.poolConfigBits.shouldCallBeforeAddLiquidity()) { // @todo delete
         //     HooksConfigLib.callBeforeAddLiquidityHook(
         //         msg.sender,
         //         maxAmountsInScaled18,
@@ -586,7 +742,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
 
         // AmountsIn can be changed by onAfterAddLiquidity if the hook charges fees or gives discounts.
         // Uses msg.sender as the Router (the contract that called the Vault).
-        // if (poolData.poolConfigBits.shouldCallAfterAddLiquidity()) { // @todo: delete
+        // if (poolData.poolConfigBits.shouldCallAfterAddLiquidity()) { // @todo delete
         //     // `hooksContract` needed to fix stack too deep.
         //     IHooks hooksContract = _hooksContracts[params.pool];
 
@@ -822,7 +978,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
         );
 
         // Uses msg.sender as the Router (the contract that called the Vault).
-        // if (poolData.poolConfigBits.shouldCallBeforeRemoveLiquidity()) { // @todo: delete
+        // if (poolData.poolConfigBits.shouldCallBeforeRemoveLiquidity()) { // @todo delete
         //     HooksConfigLib.callBeforeRemoveLiquidityHook(
         //         minAmountsOutScaled18,
         //         msg.sender,
@@ -856,7 +1012,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
 
         // AmountsOut can be changed by onAfterRemoveLiquidity if the hook charges fees or gives discounts.
         // Uses msg.sender as the Router (the contract that called the Vault).
-        // if (poolData.poolConfigBits.shouldCallAfterRemoveLiquidity()) { // @todo: delete
+        // if (poolData.poolConfigBits.shouldCallAfterRemoveLiquidity()) { // @todo delete
         //     // `hooksContract` needed to fix stack too deep.
         //     // IHooks hooksContract = _hooksContracts[params.pool];
 
@@ -1148,7 +1304,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
     *******************************************************************************/
 
     /// @inheritdoc IVaultMain
-    // function erc4626BufferWrapOrUnwrap( // @todo: delete
+    // function erc4626BufferWrapOrUnwrap( // @todo delete
     //     BufferWrapOrUnwrapParams memory params
     // )
     //     external
@@ -1202,7 +1358,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
     // from the buffer.
     // _MINIMUM_WRAP_AMOUNT prevents it. Most tokens have protections against it already; this is just an extra layer
     // of security.
-    // function _ensureValidWrapAmount(IERC4626 wrappedToken, uint256 amount) private view { // @todo: delete
+    // function _ensureValidWrapAmount(IERC4626 wrappedToken, uint256 amount) private view { // @todo delete
     //     if (amount < _MINIMUM_WRAP_AMOUNT) {
     //         revert WrapAmountTooSmall(wrappedToken);
     //     }
@@ -1215,7 +1371,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
      *
      * Updates `_reservesOf` and token deltas in storage.
      */
-    // function _wrapWithBuffer( // @todo: delete
+    // function _wrapWithBuffer( // @todo delete
     //     SwapKind kind,
     //     IERC20 underlyingToken,
     //     IERC4626 wrappedToken,
@@ -1336,7 +1492,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
      *
      * Updates `_reservesOf` and token deltas in storage.
      */
-    // function _unwrapWithBuffer( // @todo: delete
+    // function _unwrapWithBuffer( // @todo delete
     //     SwapKind kind,
     //     IERC20 underlyingToken,
     //     IERC4626 wrappedToken,
@@ -1445,7 +1601,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
     //  * @param underlyingDeltaHint Amount of underlying tokens the wrapper should have removed from the Vault
     //  * @param wrappedDeltaHint Amount of wrapped tokens the wrapper should have added to the Vault
     //  */
-    // function _settleWrap( // @todo: delete
+    // function _settleWrap( // @todo delete
     //     IERC20 underlyingToken,
     //     IERC20 wrappedToken,
     //     uint256 underlyingDeltaHint,
@@ -1473,7 +1629,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
     //  * @param underlyingDeltaHint Amount of underlying tokens supposedly added to the Vault
     //  * @param wrappedDeltaHint Amount of wrapped tokens supposedly removed from the Vault
     //  */
-    // function _settleUnwrap( // @todo: delete
+    // function _settleUnwrap( // @todo delete
     //     IERC20 underlyingToken,
     //     IERC20 wrappedToken,
     //     uint256 underlyingDeltaHint,
@@ -1502,7 +1658,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
     //  * @param expectedUnderlyingReservesAfter Vault's expected reserves of underlying after the wrap/unwrap operation
     //  * @param expectedWrappedReservesAfter Vault's expected reserves of wrapped after the wrap/unwrap operation
     //  */
-    // function _settleWrapUnwrap( // @todo: delete
+    // function _settleWrapUnwrap( // @todo delete
     //     IERC20 underlyingToken,
     //     IERC20 wrappedToken,
     //     uint256 expectedUnderlyingReservesAfter,

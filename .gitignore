@@ -1,7 +1,9 @@
 # Hardhat files.
 cache
 artifacts/@*/
+artifacts/hardhat/
 artifacts/contracts/mocks/
+artifacts/contracts/common/
 artifacts/contracts/*/*.dbg.json
 
 # Artifacts that TypeChain creates.

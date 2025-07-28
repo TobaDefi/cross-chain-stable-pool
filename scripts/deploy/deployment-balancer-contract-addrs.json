@@ -38,5 +38,35 @@
                 "chainId": 11155111
             }
         }
+    },
+    "base_sepolia": {
+        "old": {},
+        "new": {
+            "VaultAdmin": {
+                "address": "0xb98462f09ADDd2946BE1138B4079D995bd229782",
+                "deployedBlock": 28737367,
+                "chainId": 84532
+            },
+            "VaultExtension": {
+                "address": "0xf0E4D3A96ebe87aE39560d2B19e53dCC00aB5d28",
+                "deployedBlock": 28737371,
+                "chainId": 84532
+            },
+            "ProtocolFeeController": {
+                "address": "0x602198BDf1547086dC89d7b426822d95519D7844",
+                "deployedBlock": 28737375,
+                "chainId": 84532
+            },
+            "Vault": {
+                "address": "0xE0De5067454B2ce20cd74605C9D85b77bcE05DeD",
+                "deployedBlock": 28737378,
+                "chainId": 84532
+            },
+            "StablePool": {
+                "address": "0x914d061Ec7A9aE41b00b7d499972E48eB9013883",
+                "deployedBlock": 28737381,
+                "chainId": 84532
+            }
+        }
     }
 }

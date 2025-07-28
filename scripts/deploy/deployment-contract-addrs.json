@@ -58,5 +58,30 @@
                 "chainId": 7001
             }
         }
+    },
+    "base_sepolia": {
+        "old": {},
+        "new": {
+            "TestToken_1": {
+                "address": "0xbe7873DF7407b570bDe3406e50f76AB1A63b748b",
+                "deployedBlock": 28737386,
+                "chainId": 84532
+            },
+            "TestToken_2": {
+                "address": "0x32081497f7b98A61C2Fdb41f37cC2f6E8D6ad163",
+                "deployedBlock": 28737412,
+                "chainId": 84532
+            },
+            "TestToken_3": {
+                "address": "0xE1d44D28a9FbcD68FD1C3717681729EEb1961bB9",
+                "deployedBlock": 28737431,
+                "chainId": 84532
+            },
+            "TestToken_4": {
+                "address": "0x30e7d25774507630733d1E277E7B664b1Dee757e",
+                "deployedBlock": 28739724,
+                "chainId": 84532
+            }
+        }
     }
 }

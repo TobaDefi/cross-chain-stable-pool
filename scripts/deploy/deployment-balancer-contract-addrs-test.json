@@ -33,5 +33,15 @@
                 "chainId": 11155111
             }
         }
+    },
+    "base_sepolia": {
+        "old": {},
+        "new": {
+            "Router": {
+                "address": "0xF4E0F1b2D4096A03975C5eD9E71f1F82B8fF4B51",
+                "deployedBlock": 28738030,
+                "chainId": 84532
+            }
+        }
     }
 }

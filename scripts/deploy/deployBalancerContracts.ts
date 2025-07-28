@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import nodeConfig from "config";
 import hre from "hardhat";
 import path from "path";
 import { getAddressSaver, verify } from "./utils/helpers";
@@ -21,7 +20,7 @@ import {
     StablePool,
     StablePool__factory
 } from "../../typechain-types";
-import { AddressZero, Zero } from "../../test/helpers";
+
 
 const CONTRACT_NAMES = ["VaultAdmin", "VaultExtension", "ProtocolFeeController", "Vault", "StablePool"];
 const FILE_NAME = "deployment-balancer-contract-addrs";
@@ -33,21 +32,10 @@ const MINIMUM_TRADE_AMOUNT = 1e6;
 const MINIMUM_WRAP_AMOUNT = 1e3;
 const DEFAULT_AMP_FACTOR = 200;
 
-const TOKEN_ADDRESSES = [
-    "0xD509688a2D8AAed688aEFfF6dd27bE97Eb10bD8D",
-    "0x03ffc595dB8d1f3558E94F6D1596F89695242643",
-    "0x8113553820dAa1F852D32C3f7D97461f09012043"
-];
-
 async function deploy() {
     const [deployer] = await ethers.getSigners();
     const provider = ethers.provider;
     const chainId = await provider.getNetwork().then((network) => network.chainId);
-    // const config = nodeConfig.util.toObject(nodeConfig.get("deploymentParams"))[
-    //     process.env.npm_config_network || "hardhat"
-    // ];
-
-    // const args: any[] = [];
 
     console.log("\n --- Deployed data --- \n");
     console.log("* ", deployer.address, "- Deployer address");
@@ -162,11 +150,6 @@ async function deploy() {
         );
     }
 
-    // console.log(`Contract: \`${CONTRACT_NAMES[0]}\` is deployed to \`${vaultAdminContract.address}\`|\`${hre.network.name}\`.`);
-    // console.log(`Contract: \`${CONTRACT_NAMES[1]}\` is deployed to \`${vaultExtensionContract.address}\`|\`${hre.network.name}\`.`);
-    // console.log(`Contract: \`${CONTRACT_NAMES[2]}\` is deployed to \`${protocolFeeControllerContract.address}\`|\`${hre.network.name}\`.`);
-    // console.log(`Contract: \`${CONTRACT_NAMES[3]}\` is deployed to \`${vaultContract.address}\`|\`${hre.network.name}\`.`);
-
     console.log(
         `\nDeployment is completed:\n` +
             `- ${CONTRACT_NAMES[0]}: ${vaultAdminContract.address}|\n` +
@@ -181,54 +164,6 @@ async function deploy() {
         await verify(contractAddresses[i], [...contractArgs[i]]);
     }
 
-    // const tokenConfigs = [
-    //     {
-    //         token: TOKEN_ADDRESSES[0],
-    //         tokenType: 0, // 0 - STANDARD, 1 - WITH_RATE
-    //         rateProvider: AddressZero, // AddressZero for STANDARD token
-    //         paysYieldFees: true
-    //     },
-    //     {
-    //         token: TOKEN_ADDRESSES[1],
-    //         tokenType: 0, // 0 - STANDARD, 1 - WITH_RATE
-    //         rateProvider: AddressZero, // AddressZero for STANDARD token
-    //         paysYieldFees: true
-    //     },
-    //     {
-    //         token: TOKEN_ADDRESSES[2],
-    //         tokenType: 0, // 0 - STANDARD, 1 - WITH_RATE
-    //         rateProvider: AddressZero, // AddressZero for STANDARD token
-    //         paysYieldFees: true
-    //     }
-    // ];
-
-    // const roleAccounts = {
-    //     pauseManager: deployer.address,
-    //     swapFeeManager: deployer.address,
-    //     poolCreator: deployer.address
-    // };
-
-    // const liquidityManagement = {
-    //     disableUnbalancedLiquidity: false,
-    //     enableAddLiquidityCustom: false,
-    //     enableRemoveLiquidityCustom: false,
-    //     enableDonation: false
-    // };
-
-    // const registerPoolTx = await vaultExtensionContract.registerPool(
-    //     stablePoolContract.address,
-    //     tokenConfigs,
-    //     Zero, // swapFeePercentage,
-    //     Zero, // pauseWindowEndTime
-    //     false, // protocolFeeExempt
-    //     roleAccounts,
-    //     AddressZero, // poolHooksContract
-    //     liquidityManagement
-    // );
-
-    // await registerPoolTx.wait();
-
-    // console.log(`\n✅ Hash of Pool Registration TX: ${registerPoolTx.hash}\n`);
 
     console.log(`Done. All contracts are deployed.`);
 }

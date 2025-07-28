@@ -6,22 +6,22 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { IProtocolFeeController } from "./IProtocolFeeController.sol";
-import { IVaultErrors } from "./IVaultErrors.sol";
-import { IVault } from "./IVault.sol";
+import { IProtocolFeeController } from "./common/IProtocolFeeController.sol";
+import { IVaultErrors } from "./common/IVaultErrors.sol";
+import { IVault } from "./common/IVault.sol";
 import {
     FEE_SCALING_FACTOR,
     MAX_FEE_PERCENTAGE,
     PoolRoleAccounts
-} from "./VaultTypes.sol";
+} from "./common/VaultTypes.sol";
 
 import {
     ReentrancyGuardTransient
-} from "./ReentrancyGuardTransient.sol";
-import { FixedPoint } from "./FixedPoint.sol";
+} from "./common/ReentrancyGuardTransient.sol";
+import { FixedPoint } from "./common/FixedPoint.sol";
 
-import { SingletonAuthentication } from "./SingletonAuthentication.sol";
-import { VaultGuard } from "./VaultGuard.sol";
+import { SingletonAuthentication } from "./common/SingletonAuthentication.sol";
+import { VaultGuard } from "./common/VaultGuard.sol";
 
 /**
  * @notice Helper contract to manage protocol and creator fees outside the Vault.

@@ -7,22 +7,22 @@ import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { IERC4626 } from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { IProtocolFeeController } from "./IProtocolFeeController.sol";
-import { IAuthorizer } from "./IAuthorizer.sol";
-import { IVaultAdmin } from "./IVaultAdmin.sol";
-import { Rounding } from "./VaultTypes.sol";
-import { IVault } from "./IVault.sol";
+import { IProtocolFeeController } from "./common/IProtocolFeeController.sol";
+import { IAuthorizer } from "./common/IAuthorizer.sol";
+import { IVaultAdmin } from "./common/IVaultAdmin.sol";
+import { Rounding } from "./common/VaultTypes.sol";
+import { IVault } from "./common/IVault.sol";
 
-import { PackedTokenBalance } from "./PackedTokenBalance.sol";
-import { EVMCallModeHelpers } from "./EVMCallModeHelpers.sol";
-import { Authentication } from "./Authentication.sol";
-import { FixedPoint } from "./FixedPoint.sol";
+import { PackedTokenBalance } from "./common/PackedTokenBalance.sol";
+import { EVMCallModeHelpers } from "./common/EVMCallModeHelpers.sol";
+import { Authentication } from "./common/Authentication.sol";
+import { FixedPoint } from "./common/FixedPoint.sol";
 
-import { VaultStateBits, VaultStateLib } from "./VaultStateLib.sol";
-import { PoolConfigLib, PoolConfigBits } from "./PoolConfigLib.sol";
-import { VaultExtensionsLib } from "./VaultExtensionsLib.sol";
-import { VaultCommon } from "./VaultCommon.sol";
-import { VaultGuard } from "./VaultGuard.sol";
+import { VaultStateBits, VaultStateLib } from "./common/VaultStateLib.sol";
+import { PoolConfigLib, PoolConfigBits } from "./common/PoolConfigLib.sol";
+import { VaultExtensionsLib } from "./common/VaultExtensionsLib.sol";
+import { VaultCommon } from "./common/VaultCommon.sol";
+import { VaultGuard } from "./common/VaultGuard.sol";
 
 /**
  * @dev Bytecode extension for the Vault containing permissioned functions. Complementary to `VaultExtension`,

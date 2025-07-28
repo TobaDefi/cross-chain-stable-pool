@@ -6,15 +6,15 @@ import { IERC4626 } from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
-// import { IPermit2 } from "@uniswap/permit2/src/interfaces/IPermit2.sol"; // @todo: delete
+// import { IPermit2 } from "@uniswap/permit2/src/interfaces/IPermit2.sol"; // @todo delete
 
-import { IWETH } from "./IWETH.sol";
-import { IRouter } from "./IRouter.sol";
-import { IVault } from "./IVault.sol";
-import "./VaultTypes.sol";
+import { IWETH } from "./common/IWETH.sol";
+import { IRouter } from "./common/IRouter.sol";
+import { IVault } from "./common/IVault.sol";
+import "./common/VaultTypes.sol";
 
-import { RouterWethLib } from "./RouterWethLib.sol";
-import { RouterCommon } from "./RouterCommon.sol";
+import { RouterWethLib } from "./common/RouterWethLib.sol";
+import { RouterCommon } from "./common/RouterCommon.sol";
 
 /**
  * @notice Entrypoint for swaps, liquidity operations, and corresponding queries.
@@ -29,9 +29,9 @@ contract Router is IRouter, RouterCommon {
     constructor(
         IVault vault,
         IWETH weth,
-        // IPermit2 permit2, // @todo: delete
+        // IPermit2 permit2, // @todo delete
         string memory routerVersion
-    // ) RouterCommon(vault, weth, permit2, routerVersion) { // @todo: delete
+    // ) RouterCommon(vault, weth, permit2, routerVersion) { // @todo delete
     ) RouterCommon(vault, weth, routerVersion) {
         // solhint-disable-previous-line no-empty-blocks
     }
@@ -102,7 +102,7 @@ contract Router is IRouter, RouterCommon {
                 // Transfer tokens from the user to the Vault.
                 // Any value over MAX_UINT128 would revert above in `initialize`, so this SafeCast shouldn't be
                 // necessary. Done out of an abundance of caution.
-                // _permit2.transferFrom(params.sender, address(_vault), amountIn.toUint160(), address(token)); // @todo: delete
+                // _permit2.transferFrom(params.sender, address(_vault), amountIn.toUint160(), address(token)); // @todo delete
                 IERC20(token).transferFrom(params.sender, address(_vault), amountIn.toUint160());
                 _vault.settle(token, amountIn);
             }
@@ -111,6 +111,11 @@ contract Router is IRouter, RouterCommon {
         // Return ETH dust.
         _returnEth(params.sender);
     }
+
+    /***************************************************************************
+                                   Add Token To Pool
+    ***************************************************************************/
+    // @todo implement this function
 
     /***************************************************************************
                                    Add Liquidity
@@ -306,7 +311,7 @@ contract Router is IRouter, RouterCommon {
             } else {
                 // Any value over MAX_UINT128 would revert above in `addLiquidity`, so this SafeCast shouldn't be
                 // necessary. Done out of an abundance of caution.
-                // _permit2.transferFrom(params.sender, address(_vault), amountIn.toUint160(), address(token)); // @todo: delete
+                // _permit2.transferFrom(params.sender, address(_vault), amountIn.toUint160(), address(token)); // @todo delete
                 IERC20(token).transferFrom(params.sender, address(_vault), amountIn.toUint160());
                 _vault.settle(token, amountIn);
             }

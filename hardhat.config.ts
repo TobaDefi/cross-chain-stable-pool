@@ -113,8 +113,9 @@ const config: HardhatUserConfig = {
             },
         ]
     },
-    defaultNetwork: "zeta_testnet",
+    // defaultNetwork: "zeta_testnet",
     // defaultNetwork: "sepolia",
+    defaultNetwork: "hardhat",
     networks: {
         hardhat: {
             chains: {
@@ -169,6 +170,11 @@ const config: HardhatUserConfig = {
         base: {
             chainId: 8453,
             url: MAINNET_URL,
+            accounts: [...MAINNET_KEYS]
+        },
+        "base_sepolia": {
+            chainId: 84532,
+            url: "https://sepolia.base.org",
             accounts: [...MAINNET_KEYS]
         },
         optimisticEthereum: {
@@ -245,6 +251,7 @@ const config: HardhatUserConfig = {
             polygon: process.env.POLYGON_API_KEY || "",
             arbitrumOne: process.env.ARBITRUM_API_KEY || "",
             base: process.env.BASE_API_KEY || "",
+            base_sepolia: process.env.BASE_API_KEY || "",
             optimisticEthereum: process.env.OPTIMISM_API_KEY || "",
             zeta_mainnet: process.env.ZETA_API_KEY || "",
             zeta_testnet: process.env.ZETA_API_KEY || ""
@@ -272,6 +279,14 @@ const config: HardhatUserConfig = {
                 urls: {
                     apiURL: "https://api.basescan.org/api",
                     browserURL: "https://basescan.org/"
+                }
+            },
+            {
+                network: "base_sepolia",
+                chainId: 84532,
+                urls: {
+                    apiURL: "https://api-sepolia.basescan.org/api",
+                    browserURL: "https://sepolia.basescan.org/"
                 }
             },
             {

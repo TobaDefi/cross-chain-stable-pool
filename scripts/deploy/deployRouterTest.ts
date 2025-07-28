@@ -5,20 +5,21 @@ import hre from "hardhat";
 import path from "path";
 import { getAddressSaver, verify } from "./utils/helpers";
 const { ethers, network } = hre;
+const { AddressZero } = ethers.constants;
 
 const CONTRACT_NAME = "Router";
 const FILE_NAME = "deployment-balancer-contract-addrs-test";
 const PATH_TO_FILE = path.join(__dirname, `./${FILE_NAME}.json`);
 
+const VAULT_TEST_ADDRESS = "0xE0De5067454B2ce20cd74605C9D85b77bcE05DeD"; // BASE SEPOLIA
+
 async function deploy() {
     const [deployer] = await ethers.getSigners();
 
     const args = {
-        vault: "0xd48F8CF9198a969e6b730525862C2F2B0d8aD27B",
-        weth: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
-        // permit2: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
-        routerVersion:
-            '{"name":"Router""version":2"deployment":"20250715-v3-router-v2"}'
+        vault: VAULT_TEST_ADDRESS,
+        weth: AddressZero,
+        routerVersion: '{"name":"Router""version":2"deployment":"20250723-v3-router-v2"}'
     };
 
     console.log("\n --- Deployed data --- \n");
@@ -47,7 +48,6 @@ async function deploy() {
     );
 
     console.log("\nDeployment is completed.");
-    // await verify(contract.address, [args.vault, args.weth, args.permit2, args.routerVersion]);
     await verify(contract.address, [args.vault, args.weth, args.routerVersion]);
     console.log("\nDone.");
 }
