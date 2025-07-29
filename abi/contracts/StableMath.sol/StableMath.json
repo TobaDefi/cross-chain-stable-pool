@@ -1,0 +1,5 @@
+[
+  "error StableComputeBalanceDidNotConverge()",
+  "error StableInvariantDidNotConverge()",
+  "function MAX_STABLE_TOKENS() view returns (uint256)"
+]

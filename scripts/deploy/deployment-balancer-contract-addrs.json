@@ -1,0 +1,72 @@
+{
+    "sepolia": {
+        "old": {},
+        "new": {
+            "VaultAdmin": {
+                "address": "0x069170463F87a97c9100C09e50f9ac87c59d56C0",
+                "deployedBlock": 8726547,
+                "chainId": 11155111
+            },
+            "VaultExtension": {
+                "address": "0x9ada9586e3aaaB7C8F57a39180db44749c90301A",
+                "deployedBlock": 8726548,
+                "chainId": 11155111
+            },
+            "ProtocolFeeController": {
+                "address": "0x370f2c00729AAe79EB0912446E45aD3070e0cA9B",
+                "deployedBlock": 8726549,
+                "chainId": 11155111
+            },
+            "Vault": {
+                "address": "0x1C8df36391afBe880Ed566486f95F37D84c0CAd1",
+                "deployedBlock": 8726550,
+                "chainId": 11155111
+            },
+            "StablePool": {
+                "address": "0x19288FB03a9ED741568eDF0898910CbCa1C7Ed86",
+                "deployedBlock": 8726551,
+                "chainId": 11155111
+            },
+            "CompositeLiquidityRouter": {
+                "address": "0x2c052031eC46Bc6f1Fa79c52Ad3B5F59A5BFBA17",
+                "deployedBlock": 8769196,
+                "chainId": 11155111
+            },
+            "Router": {
+                "address": "0xfF518a7211C9fC44D450858d301a570935F73BBd",
+                "deployedBlock": 8783027,
+                "chainId": 11155111
+            }
+        }
+    },
+    "base_sepolia": {
+        "old": {},
+        "new": {
+            "VaultAdmin": {
+                "address": "0xb98462f09ADDd2946BE1138B4079D995bd229782",
+                "deployedBlock": 28737367,
+                "chainId": 84532
+            },
+            "VaultExtension": {
+                "address": "0xf0E4D3A96ebe87aE39560d2B19e53dCC00aB5d28",
+                "deployedBlock": 28737371,
+                "chainId": 84532
+            },
+            "ProtocolFeeController": {
+                "address": "0x602198BDf1547086dC89d7b426822d95519D7844",
+                "deployedBlock": 28737375,
+                "chainId": 84532
+            },
+            "Vault": {
+                "address": "0xE0De5067454B2ce20cd74605C9D85b77bcE05DeD",
+                "deployedBlock": 28737378,
+                "chainId": 84532
+            },
+            "StablePool": {
+                "address": "0x914d061Ec7A9aE41b00b7d499972E48eB9013883",
+                "deployedBlock": 28737381,
+                "chainId": 84532
+            }
+        }
+    }
+}

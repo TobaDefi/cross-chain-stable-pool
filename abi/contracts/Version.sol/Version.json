@@ -1,0 +1,4 @@
+[
+  "constructor(string)",
+  "function version() view returns (string)"
+]

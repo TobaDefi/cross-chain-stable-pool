@@ -1,0 +1,13 @@
+[
+  "function addLiquidity(tuple(address,address,uint256[],uint256,uint8,bytes)) returns (uint256[], uint256, bytes)",
+  "function erc4626BufferWrapOrUnwrap(tuple(uint8,uint8,address,uint256,uint256)) returns (uint256, uint256, uint256)",
+  "function getPoolTokenCountAndIndexOfToken(address,address) view returns (uint256, uint256)",
+  "function getVaultExtension() view returns (address)",
+  "function removeLiquidity(tuple(address,address,uint256,uint256[],uint8,bytes)) returns (uint256, uint256[], bytes)",
+  "function sendTo(address,address,uint256)",
+  "function settle(address,uint256) returns (uint256)",
+  "function swap(tuple(uint8,address,address,address,uint256,uint256,bytes)) returns (uint256, uint256, uint256)",
+  "function transfer(address,address,uint256) returns (bool)",
+  "function transferFrom(address,address,address,uint256) returns (bool)",
+  "function unlock(bytes) returns (bytes)"
+]

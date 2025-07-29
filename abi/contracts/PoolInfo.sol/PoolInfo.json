@@ -1,0 +1,8 @@
+[
+  "constructor(address)",
+  "function getAggregateFeePercentages() view returns (uint256, uint256)",
+  "function getCurrentLiveBalances() view returns (uint256[])",
+  "function getStaticSwapFeePercentage() view returns (uint256)",
+  "function getTokenInfo() view returns (address[], tuple(uint8,address,bool)[], uint256[], uint256[])",
+  "function getTokens() view returns (address[])"
+]

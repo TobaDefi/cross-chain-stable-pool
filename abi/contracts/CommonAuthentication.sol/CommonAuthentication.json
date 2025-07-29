@@ -1,0 +1,5 @@
+[
+  "error SenderNotAllowed()",
+  "error VaultNotSet()",
+  "function getActionId(bytes4) view returns (bytes32)"
+]

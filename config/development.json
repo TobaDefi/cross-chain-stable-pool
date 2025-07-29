@@ -1,0 +1,11 @@
+{
+    "deploymentParams": {
+        "sepolia": {
+            "TemplateToken": {
+                "name": "TemplateToken",
+                "symbol": "TPT",
+                "decimals": 18
+            }
+        }
+    }
+}

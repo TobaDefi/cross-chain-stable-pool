@@ -1,0 +1,6 @@
+[
+  "constructor(bytes)",
+  "error CodeDeploymentFailed()",
+  "function getCreationCode() view returns (bytes)",
+  "function getCreationCodeContracts() view returns (address, address)"
+]

@@ -1,0 +1,4 @@
+[
+  "function getMaximumInvariantRatio() view returns (uint256)",
+  "function getMinimumInvariantRatio() view returns (uint256)"
+]

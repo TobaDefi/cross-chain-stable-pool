@@ -1,0 +1,47 @@
+{
+    "sepolia": {
+        "old": {},
+        "new": {
+            "VaultAdmin": {
+                "address": "0x72892A649E3C0156aF625f179285b6Df746eBaf0",
+                "deployedBlock": 8790244,
+                "chainId": 11155111
+            },
+            "VaultExtension": {
+                "address": "0x4f5D3f52aC63852dB655Db5AA2E119E7b4d42f23",
+                "deployedBlock": 8790245,
+                "chainId": 11155111
+            },
+            "ProtocolFeeController": {
+                "address": "0x8AF6078f318B99C735183DF66ca04E1bB325c39b",
+                "deployedBlock": 8790246,
+                "chainId": 11155111
+            },
+            "Vault": {
+                "address": "0xd48F8CF9198a969e6b730525862C2F2B0d8aD27B",
+                "deployedBlock": 8790247,
+                "chainId": 11155111
+            },
+            "StablePool": {
+                "address": "0xd75e75A2e83713497C0116227081B47493f26Ef9",
+                "deployedBlock": 8790248,
+                "chainId": 11155111
+            },
+            "Router": {
+                "address": "0x46f15e4B3bBDa3C749b1A422bc6e20663d7e10B0",
+                "deployedBlock": 8790457,
+                "chainId": 11155111
+            }
+        }
+    },
+    "base_sepolia": {
+        "old": {},
+        "new": {
+            "Router": {
+                "address": "0xF4E0F1b2D4096A03975C5eD9E71f1F82B8fF4B51",
+                "deployedBlock": 28738030,
+                "chainId": 84532
+            }
+        }
+    }
+}

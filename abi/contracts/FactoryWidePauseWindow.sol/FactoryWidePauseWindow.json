@@ -1,0 +1,7 @@
+[
+  "constructor(uint32)",
+  "error PoolPauseWindowDurationOverflow()",
+  "function getNewPoolPauseWindowEndTime() view returns (uint32)",
+  "function getOriginalPauseWindowEndTime() view returns (uint32)",
+  "function getPauseWindowDuration() view returns (uint32)"
+]

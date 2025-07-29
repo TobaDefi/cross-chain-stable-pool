@@ -1,0 +1,11 @@
+[
+  "error ERC20InsufficientAllowance(address,uint256,uint256)",
+  "error ERC20InsufficientBalance(address,uint256,uint256)",
+  "error ERC20InvalidApprover(address)",
+  "error ERC20InvalidReceiver(address)",
+  "error ERC20InvalidSender(address)",
+  "error ERC20InvalidSpender(address)",
+  "error PoolTotalSupplyTooLow(uint256)",
+  "event Approval(address indexed,address indexed,address indexed,uint256)",
+  "event Transfer(address indexed,address indexed,address indexed,uint256)"
+]

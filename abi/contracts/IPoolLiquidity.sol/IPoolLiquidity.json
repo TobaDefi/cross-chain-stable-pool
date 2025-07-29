@@ -1,0 +1,4 @@
+[
+  "function onAddLiquidityCustom(address,uint256[],uint256,uint256[],bytes) returns (uint256[], uint256, uint256[], bytes)",
+  "function onRemoveLiquidityCustom(address,uint256,uint256[],uint256[],bytes) returns (uint256, uint256[], uint256[], bytes)"
+]

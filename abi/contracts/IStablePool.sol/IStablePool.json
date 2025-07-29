@@ -1,0 +1,15 @@
+[
+  "function computeBalance(uint256[],uint256,uint256) view returns (uint256)",
+  "function computeInvariant(uint256[],uint8) view returns (uint256)",
+  "function getAmplificationParameter() view returns (uint256, bool, uint256)",
+  "function getAmplificationState() view returns (tuple(uint64,uint64,uint32,uint32), uint256)",
+  "function getMaximumInvariantRatio() view returns (uint256)",
+  "function getMaximumSwapFeePercentage() view returns (uint256)",
+  "function getMinimumInvariantRatio() view returns (uint256)",
+  "function getMinimumSwapFeePercentage() view returns (uint256)",
+  "function getStablePoolDynamicData() view returns (tuple(uint256[],uint256[],uint256,uint256,uint256,uint256,uint256,uint256,uint32,uint32,bool,bool,bool,bool))",
+  "function getStablePoolImmutableData() view returns (tuple(address[],uint256[],uint256))",
+  "function onSwap(tuple(uint8,uint256,uint256[],uint256,uint256,address,bytes)) returns (uint256)",
+  "function startAmplificationParameterUpdate(uint256,uint256)",
+  "function stopAmplificationParameterUpdate()"
+]

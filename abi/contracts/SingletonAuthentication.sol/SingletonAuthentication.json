@@ -1,0 +1,7 @@
+[
+  "error SenderNotAllowed()",
+  "error VaultNotSet()",
+  "function getActionId(bytes4) view returns (bytes32)",
+  "function getAuthorizer() view returns (address)",
+  "function getVault() view returns (address)"
+]

@@ -1,0 +1,15 @@
+[
+  "error Disabled()",
+  "error IndexOutOfBounds()",
+  "error SenderNotAllowed()",
+  "event FactoryDisabled()",
+  "event PoolCreated(address indexed)",
+  "function disable()",
+  "function getActionId(bytes4) view returns (bytes32)",
+  "function getDeploymentAddress(bytes,bytes32) view returns (address)",
+  "function getPoolCount() view returns (uint256)",
+  "function getPools() view returns (address[])",
+  "function getPoolsInRange(uint256,uint256) view returns (address[])",
+  "function isDisabled() view returns (bool)",
+  "function isPoolFromFactory(address) view returns (bool)"
+]
