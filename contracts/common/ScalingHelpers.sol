@@ -109,22 +109,24 @@ library ScalingHelpers {
         uint256 length = from.length;
         InputHelpers.ensureInputLengthMatch(length, to.length);
 
+        // assembly ("memory-safe") {
+        //     mcopy(add(to, 0x20), add(from, 0x20), mul(length, 0x20)) // @todo
+        // }
+
         // solhint-disable-next-line no-inline-assembly
-        assembly ("memory-safe") {
-            mcopy(add(to, 0x20), add(from, 0x20), mul(length, 0x20)) // @todo
-            // let fromPtr := add(from, 0x20)
-            // let toPtr := add(to, 0x20)
-            // let end := add(fromPtr, mul(length, 0x20))
+        assembly {
+            let src := add(from, 0x20)
+            let dst := add(to, 0x20)
+            let end := add(src, mul(length, 0x20))
+            for {
 
-            // for {
+            } lt(src, end) {
 
-            // } lt(fromPtr, end) {
-            //     fromPtr := add(fromPtr, 0x20)
-            //     toPtr := add(toPtr, 0x20)
-            // } {
-            //     let data := mload(fromPtr)
-            //     mstore(toPtr, data)
-            // }
+            } {
+                mstore(dst, mload(src))
+                src := add(src, 0x20)
+                dst := add(dst, 0x20)
+            }
         }
     }
 

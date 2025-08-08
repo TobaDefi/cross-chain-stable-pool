@@ -221,6 +221,8 @@ contract VaultExtension is IVaultExtension, VaultCommon, Proxy {
                 paysYieldFees: tokenData.paysYieldFees
             });
 
+            _poolTokensByChainId[pool][tokenData.chainId] = token;
+
             if (tokenData.tokenType == TokenType.STANDARD) {
                 if (hasRateProvider || tokenData.paysYieldFees) {
                     revert InvalidTokenConfiguration();
@@ -487,6 +489,15 @@ contract VaultExtension is IVaultExtension, VaultCommon, Proxy {
         address pool
     ) external view onlyVaultDelegateCall withRegisteredPool(pool) returns (IERC20[] memory tokens) {
         return _poolTokens[pool];
+    }
+
+
+    /// @inheritdoc IVaultExtension
+    function getPoolTokenByChainId(
+        address pool,
+        uint256 chainId
+    ) external view onlyVaultDelegateCall withRegisteredPool(pool) returns (IERC20 token) {
+        return _poolTokensByChainId[pool][chainId];
     }
 
     /// @inheritdoc IVaultExtension

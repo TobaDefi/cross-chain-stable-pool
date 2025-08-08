@@ -2,38 +2,219 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC4626 } from "@openzeppelin/contracts/interfaces/IERC4626.sol";
-import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Address } from "@openzeppelin/contracts/utils/Address.sol";
-// import { IPermit2 } from "@uniswap/permit2/src/interfaces/IPermit2.sol"; // @todo delete
+import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+// @todo revert this in the future
+// import { IPermit2 } from "@uniswap/permit2/src/interfaces/IPermit2.sol";
 
-import { IWETH } from "./common/IWETH.sol";
-import { IRouter } from "./common/IRouter.sol";
-import { IVault } from "./common/IVault.sol";
+import {IWETH} from "./common/IWETH.sol";
+import {IRouter} from "./common/IRouter.sol";
+import {IVault} from "./common/IVault.sol";
 import "./common/VaultTypes.sol";
 
-import { RouterWethLib } from "./common/RouterWethLib.sol";
-import { RouterCommon } from "./common/RouterCommon.sol";
+import {RouterWethLib} from "./common/RouterWethLib.sol";
+import {RouterCommon} from "./common/RouterCommon.sol";
+
+import {IGatewayZEVM} from "@zetachain/protocol-contracts/contracts/zevm/interfaces/IGatewayZEVM.sol";
+import {MessageContext, UniversalContract} from "@zetachain/protocol-contracts/contracts/zevm/interfaces/UniversalContract.sol";
+import {RevertContext, RevertOptions} from "@zetachain/protocol-contracts/contracts/Revert.sol";
+import {SwapHelperLib} from "@zetachain/toolkit/contracts/SwapHelperLib.sol";
+import {IZRC20, IZRC20Metadata} from "@zetachain/protocol-contracts/contracts/zevm/interfaces/IZRC20.sol";
+import {IUniswapV2Router02} from "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 /**
  * @notice Entrypoint for swaps, liquidity operations, and corresponding queries.
  * @dev The external API functions unlock the Vault, which calls back into the corresponding hook functions.
  * These interact with the Vault, transfer tokens, settle accounting, and handle wrapping and unwrapping ETH.
  */
-contract Router is IRouter, RouterCommon {
+contract Router is IRouter, RouterCommon, UniversalContract {
     using Address for address payable;
     using RouterWethLib for IWETH;
     using SafeCast for *;
 
+    /// @notice The Gateway contract address for ZetaChain Testnet
+    IGatewayZEVM public constant GATEWAY = IGatewayZEVM(0x6c533f7fE93fAE114d0954697069Df33C9B74fD7);
+
+    /// @notice The Uniswap V2 Router contract address for ZetaChain Testnet
+    /// @dev This router is used to swap tokens in the Universal Token Sale.
+    address public constant UNISWAP_ROUTER = 0x2ca7d64A7EFE2D62A725E2B35Cf7230D6677FfEe;
+
+    /// @notice The gas limit for the onRevert function.
+    uint256 public constant GAS_LIMIT = 5000000;
+
+    bool internal _initOnColl;
+    bool internal _toExternalNetwork;
+
+    /// @notice Error thrown when the caller is not the Gateway contract.
+    error NotGateway();
+
+    /// @notice Error thrown when the approval of a token transfer fails.
+    error ApprovalFailed(address token, uint256 amount);
+
+    /// @notice Error thrown when the amount is insufficient to cover the gas fee for withdrawal to the external network.
+    error InsufficientWithdrawGasFeeAmount();
+
+    error VaultNotRegisteredNetwork(address pool, uint256 chainId);
+
+    /// @notice Modifier that restricts access to the Gateway contract.
+    modifier onlyGateway() {
+        if (msg.sender != address(GATEWAY)) revert NotGateway();
+        _;
+    }
+
     constructor(
         IVault vault,
         IWETH weth,
-        // IPermit2 permit2, // @todo delete
+        // @todo revert this in the future
+        // IPermit2 permit2,
         string memory routerVersion
-    // ) RouterCommon(vault, weth, permit2, routerVersion) { // @todo delete
-    ) RouterCommon(vault, weth, routerVersion) {
+    )
+        // @todo revert this in the future
+        // ) RouterCommon(vault, weth, permit2, routerVersion) {
+        RouterCommon(vault, weth, routerVersion)
+    {
         // solhint-disable-previous-line no-empty-blocks
+    }
+
+    /*******************************************************************************
+                                Gateway Functions
+    *******************************************************************************/
+
+    struct Message {
+        address pool;
+        uint256 minBptAmountOut;
+    }
+
+    function onCall(
+        MessageContext calldata context,
+        address zrc20,
+        uint256 amount,
+        bytes calldata message
+    ) external override saveSender(msg.sender) onlyGateway {
+        Message memory _msg = abi.decode(message, (Message));
+
+        IERC20[] memory tokens = _vault.getPoolTokens(_msg.pool);
+
+        uint256[] memory exactAmountsIn = new uint256[](tokens.length);
+
+        for (uint256 i = 0; i < tokens.length; ++i) {
+            if (address(tokens[i]) == zrc20) {
+                exactAmountsIn[i] = amount;
+            } else {
+                exactAmountsIn[i] = 0;
+            }
+        }
+
+        _initOnColl = true;
+
+        _vault.unlock(
+            abi.encodeCall(
+                Router.addLiquidityHook,
+                AddLiquidityHookParams({
+                    sender: context.senderEVM,
+                    pool: _msg.pool,
+                    maxAmountsIn: exactAmountsIn,
+                    minBptAmountOut: _msg.minBptAmountOut,
+                    kind: AddLiquidityKind.UNBALANCED,
+                    wethIsEth: false, // @todo check that it is not needed
+                    userData: "0x" // @todo maybe add some data here?
+                })
+            )
+        );
+        _initOnColl = false;
+    }
+
+    /**
+     * @notice Transfer tokens to the recipient on ZetaChain or withdraw to a connected chain
+     */
+    function _withdraw(address sender, address targetToken, uint256 out, address gasZRC20, uint256 gasFee) internal {
+        if (gasZRC20 == targetToken) {
+            if (!IZRC20(gasZRC20).approve(address(GATEWAY), (out + gasFee))) {
+                revert ApprovalFailed(gasZRC20, (out + gasFee));
+            }
+        } else {
+            if (!IZRC20(gasZRC20).approve(address(GATEWAY), gasFee)) {
+                revert ApprovalFailed(gasZRC20, gasFee);
+            }
+            if (!IZRC20(targetToken).approve(address(GATEWAY), out)) {
+                revert ApprovalFailed(targetToken, out);
+            }
+        }
+
+        // @todo implement revert message params
+        // RevertMessageParams memory params = RevertMessageParams({
+        //     sender: _bytesToAddress(sender),
+        //     targetToken: targetToken,
+        //     out: out,
+        //     gasZRC20: gasZRC20,
+        //     gasFee: gasFee
+        // });
+
+        GATEWAY.withdraw(
+            abi.encodePacked(sender),
+            out,
+            targetToken,
+            RevertOptions({
+                revertAddress: address(0), // @todo implement revert address
+                callOnRevert: false, // @todo implement revert logic
+                abortAddress: address(0),
+                revertMessage: "0x", // @todo implement revert message
+                onRevertGasLimit: GAS_LIMIT
+            })
+        );
+    }
+
+    function onRevert(RevertContext calldata context) external onlyGateway {
+        // @todo implement revert logic
+    }
+
+    function onAbort(RevertContext calldata context) external onlyGateway {
+        // @todo implement abort logic
+    }
+
+    /**
+     * @notice Swaps enough tokens to pay gas fees, then swaps the remainder to the target token
+     */
+    function _handleGasAndSwap(
+        uint256 amount,
+        address targetToken
+    ) internal returns (uint256 amountOut, address gasZRC20, uint256 gasFee) {
+        (gasZRC20, gasFee) = IZRC20(targetToken).withdrawGasFee();
+
+        // NOTE: If the target token is the gas ZRC20, we can use it directly.
+        if (targetToken == gasZRC20) {
+            if (amount < gasFee) {
+                revert InsufficientWithdrawGasFeeAmount();
+            }
+            amountOut = amount - gasFee;
+        } else {
+            // NOTE: If the target token is not the gas ZRC20, we need to swap.
+            address wZeta = IUniswapV2Router02(UNISWAP_ROUTER).WETH();
+            address[] memory path = new address[](3);
+
+            path = new address[](3);
+            path[0] = targetToken;
+            path[1] = wZeta;
+            path[2] = gasZRC20;
+
+            uint256[] memory amountsIn = IUniswapV2Router02(UNISWAP_ROUTER).getAmountsIn(gasFee, path);
+
+            if (amount < amountsIn[0]) {
+                revert InsufficientWithdrawGasFeeAmount();
+            }
+
+            uint256 inputForGas = SwapHelperLib.swapTokensForExactTokens(
+                UNISWAP_ROUTER,
+                targetToken,
+                gasFee,
+                gasZRC20,
+                amount
+            );
+
+            amountOut = amount - inputForGas;
+        }
     }
 
     /*******************************************************************************
@@ -102,7 +283,8 @@ contract Router is IRouter, RouterCommon {
                 // Transfer tokens from the user to the Vault.
                 // Any value over MAX_UINT128 would revert above in `initialize`, so this SafeCast shouldn't be
                 // necessary. Done out of an abundance of caution.
-                // _permit2.transferFrom(params.sender, address(_vault), amountIn.toUint160(), address(token)); // @todo delete
+                // @todo revert this in the future
+                // _permit2.transferFrom(params.sender, address(_vault), amountIn.toUint160(), address(token));
                 IERC20(token).transferFrom(params.sender, address(_vault), amountIn.toUint160());
                 _vault.settle(token, amountIn);
             }
@@ -116,6 +298,50 @@ contract Router is IRouter, RouterCommon {
                                    Add Token To Pool
     ***************************************************************************/
     // @todo implement this function
+    error Todo();
+
+    function addTokenToPool(
+        address pool,
+        TokenConfig memory tokenConfig,
+        uint256 exactAmountIn
+    ) external saveSender(msg.sender) returns (uint256 bptAmountOut) {
+        (bptAmountOut, ) = abi.decode(
+            _vault.unlock(
+                abi.encodeCall(
+                    Router.addTokenToPoolHook,
+                    AddTokenToPoolHookParams({
+                        pool: pool,
+                        sender: msg.sender,
+                        tokenConfig: tokenConfig,
+                        exactAmountIn: exactAmountIn
+                    })
+                )
+            ),
+            (uint256, uint256)
+        );
+    }
+
+    function addTokenToPoolHook(
+        AddTokenToPoolHookParams calldata params
+    ) external nonReentrant onlyVault returns (uint256 bptAmountOut, uint256 tokenIndex) {
+        (bptAmountOut, tokenIndex) = _vault.addTokenToPool(
+            AddTokenToPoolParams({
+                pool: params.pool,
+                sender: params.sender,
+                tokenConfig: params.tokenConfig,
+                exactAmountIn: params.exactAmountIn
+            })
+        );
+
+        if (params.exactAmountIn == 0) revert Todo(); // @todo need to implement revert reason
+
+        IERC20[] memory tokens = _vault.getPoolTokens(params.pool);
+
+        if (tokenIndex > tokens.length - 1) revert Todo(); // @todo need to implement revert reason
+
+        IERC20(tokens[tokenIndex]).transferFrom(params.sender, address(_vault), params.exactAmountIn.toUint160());
+        _vault.settle(tokens[tokenIndex], params.exactAmountIn);
+    }
 
     /***************************************************************************
                                    Add Liquidity
@@ -311,8 +537,13 @@ contract Router is IRouter, RouterCommon {
             } else {
                 // Any value over MAX_UINT128 would revert above in `addLiquidity`, so this SafeCast shouldn't be
                 // necessary. Done out of an abundance of caution.
-                // _permit2.transferFrom(params.sender, address(_vault), amountIn.toUint160(), address(token)); // @todo delete
-                IERC20(token).transferFrom(params.sender, address(_vault), amountIn.toUint160());
+                // @todo revert this in the future
+                // _permit2.transferFrom(params.sender, address(_vault), amountIn.toUint160(), address(token));
+                if (_initOnColl) {
+                    IERC20(token).transfer(address(_vault), amountIn.toUint160());
+                } else {
+                    IERC20(token).transferFrom(params.sender, address(_vault), amountIn.toUint160());
+                }
                 _vault.settle(token, amountIn);
             }
         }
@@ -350,6 +581,50 @@ contract Router is IRouter, RouterCommon {
             ),
             (uint256, uint256[], bytes)
         );
+    }
+
+    function removeLiquiditySingleTokenExactIn(
+        address pool,
+        uint256 exactBptAmountIn,
+        uint256 chainId,
+        uint256 minAmountOut,
+        bool wethIsEth,
+        bytes memory userData
+    ) external saveSender(msg.sender) returns (uint256 amountOut) {
+        IERC20 tokenOut = _vault.getPoolTokenByChainId(pool, chainId);
+        if (address(tokenOut) == address(0)) {
+            revert VaultNotRegisteredNetwork(pool, chainId);
+        }
+
+        (uint256[] memory minAmountsOut, uint256 tokenIndex) = _getSingleInputArrayAndTokenIndex(
+            pool,
+            tokenOut,
+            minAmountOut
+        );
+
+        _toExternalNetwork = true;
+
+        (, uint256[] memory amountsOut, ) = abi.decode(
+            _vault.unlock(
+                abi.encodeCall(
+                    Router.removeLiquidityHook,
+                    RemoveLiquidityHookParams({
+                        sender: msg.sender,
+                        pool: pool,
+                        minAmountsOut: minAmountsOut,
+                        maxBptAmountIn: exactBptAmountIn,
+                        kind: RemoveLiquidityKind.SINGLE_TOKEN_EXACT_IN,
+                        wethIsEth: wethIsEth,
+                        userData: userData
+                    })
+                )
+            ),
+            (uint256, uint256[], bytes)
+        );
+
+        amountOut = amountsOut[tokenIndex];
+
+        _toExternalNetwork = false;
     }
 
     /// @inheritdoc IRouter
@@ -507,10 +782,24 @@ contract Router is IRouter, RouterCommon {
 
             // There can be only one WETH token in the pool.
             if (params.wethIsEth && address(token) == address(_weth)) {
-                _weth.unwrapWethAndTransferToSender(_vault, params.sender, amountOut);
+                // @todo temporarily solution
+                // _weth.unwrapWethAndTransferToSender(_vault, params.sender, amountOut);
             } else {
-                // Transfer the token to the sender (amountOut).
-                _vault.sendTo(token, params.sender, amountOut);
+                address recipient = params.sender;
+
+                if (_toExternalNetwork) recipient = address(this);
+
+                // Transfer the token to the sender or Router (amountOut).
+                _vault.sendTo(token, recipient, amountOut);
+
+                if (_toExternalNetwork) {
+                    (uint256 updateAmountOut, address gasZRC20, uint256 gasFee) = _handleGasAndSwap(
+                        amountOut,
+                        address(token)
+                    );
+
+                    _withdraw(params.sender, address(token), updateAmountOut, gasZRC20, gasFee);
+                }
             }
         }
 

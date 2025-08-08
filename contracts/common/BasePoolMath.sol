@@ -7,6 +7,8 @@ import { Rounding } from "./VaultTypes.sol";
 
 import { FixedPoint } from "./FixedPoint.sol";
 
+import "hardhat/console.sol";
+
 library BasePoolMath {
     using FixedPoint for uint256;
 
@@ -171,6 +173,8 @@ library BasePoolMath {
             uint256 proportionalTokenBalance = invariantRatio.mulDown(currentBalances[i]);
             if (newBalances[i] > proportionalTokenBalance) {
                 uint256 taxableAmount;
+                console.log("# newBalances[", i, "]", newBalances[i]);
+                console.log("# proportionalTokenBalance", proportionalTokenBalance);
                 unchecked {
                     taxableAmount = newBalances[i] - proportionalTokenBalance;
                 }

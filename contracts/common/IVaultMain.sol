@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./VaultTypes.sol";
 
@@ -74,6 +74,14 @@ interface IVaultMain {
     function swap(
         VaultSwapParams memory vaultSwapParams
     ) external returns (uint256 amountCalculatedRaw, uint256 amountInRaw, uint256 amountOutRaw);
+
+    /***************************************************************************
+                                   Add New Token
+    ***************************************************************************/
+
+    function addTokenToPool(
+        AddTokenToPoolParams memory params
+    ) external returns (uint256 bptAmountOut, uint256 tokenIndex);
 
     /***************************************************************************
                                    Add Liquidity

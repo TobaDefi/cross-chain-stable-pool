@@ -198,18 +198,19 @@ library HooksConfigLib {
         return swapFeePercentage;
     }
 
-    /**
-     * @dev Call the `onBeforeSwap` hook. Reverts on failure.
-     * @param swapParams The swap parameters used in the hook
-     * @param pool Pool address
-     * @param hooksContract Storage slot with the address of the hooks contract
-     */
-    function callBeforeSwapHook(PoolSwapParams memory swapParams, address pool, IHooks hooksContract) internal {
-        if (hooksContract.onBeforeSwap(swapParams, pool) == false) {
-            // Hook contract implements onBeforeSwap, but it has failed, so reverts the transaction.
-            revert IVaultErrors.BeforeSwapHookFailed();
-        }
-    }
+    
+    // /**
+    //  * @dev Call the `onBeforeSwap` hook. Reverts on failure.
+    //  * @param swapParams The swap parameters used in the hook
+    //  * @param pool Pool address
+    //  * @param hooksContract Storage slot with the address of the hooks contract
+    //  */
+    // function callBeforeSwapHook(PoolSwapParams memory swapParams, address pool, IHooks hooksContract) internal {
+    //     if (hooksContract.onBeforeSwap(swapParams, pool) == false) {
+    //         // Hook contract implements onBeforeSwap, but it has failed, so reverts the transaction.
+    //         revert IVaultErrors.BeforeSwapHookFailed();
+    //     }
+    // }
 
     /**
      * @dev Call the `onAfterSwap` hook, then validate and return the result. Reverts on failure, or if the limits

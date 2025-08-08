@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC4626 } from "@openzeppelin/contracts/interfaces/IERC4626.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { AddLiquidityKind, RemoveLiquidityKind, SwapKind } from "./VaultTypes.sol";
+import {AddLiquidityKind, RemoveLiquidityKind, SwapKind, TokenConfig} from "./VaultTypes.sol";
 
 /// @notice User-friendly interface to basic Vault operations: swap, add/remove liquidity, and associated queries.
 interface IRouter {
@@ -51,6 +51,17 @@ interface IRouter {
         bool wethIsEth,
         bytes memory userData
     ) external payable returns (uint256 bptAmountOut);
+
+    /***************************************************************************
+                                   Add Token To Pool
+    ***************************************************************************/
+
+    struct AddTokenToPoolHookParams {
+        address pool;
+        address sender;
+        TokenConfig tokenConfig;
+        uint256 exactAmountIn;
+    }
 
     /***************************************************************************
                                    Add Liquidity
