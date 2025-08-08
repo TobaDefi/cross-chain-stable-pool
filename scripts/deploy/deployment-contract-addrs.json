@@ -56,6 +56,11 @@
                 "address": "0x50E04256c7eCC6E5905F2d5079f8148cDeD9B879",
                 "deployedBlock": 11230230,
                 "chainId": 7001
+            },
+            "HelperContract": {
+                "address": "0x5E6A4483E81aC09181813Bc2A1645f3951BDdF0B",
+                "deployedBlock": 11940274,
+                "chainId": 7001
             }
         }
     },

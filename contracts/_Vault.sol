@@ -222,7 +222,8 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
         SwapState memory swapState = _loadSwapState(vaultSwapParams, poolData);
         PoolSwapParams memory poolSwapParams = _buildPoolSwapParams(vaultSwapParams, swapState, poolData);
 
-        // if (poolData.poolConfigBits.shouldCallBeforeSwap()) { // @todo delete
+        // @todo delete
+        // if (poolData.poolConfigBits.shouldCallBeforeSwap()) {
         //     HooksConfigLib.callBeforeSwapHook(
         //         poolSwapParams,
         //         vaultSwapParams.pool,
@@ -504,42 +505,59 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
     ***************************************************************************/
     event NewTokenAdded(address indexed pool, address indexed token, uint256 tokenIndex);
 
-    function addNewToken(
-        address pool,
-        TokenConfig memory tokenConfig,
-        uint256 initialAmount
-    ) external returns (uint256 tokenIndex, uint256 bptAmountOut /*, uint256[] memory swapFeeAmounts */) {
-        IERC20 token = tokenConfig.token;
+    // struct AddTokenToPoolParams { @ todo delete
+    //     address pool;
+    //     TokenConfig tokenConfig;
+    //     uint256 initialAmount;
+    // }
+
+    function addTokenToPool(
+        AddTokenToPoolParams memory params
+    ) external override returns (uint256 bptAmountOut, uint256 tokenIndex) {
+        IERC20 token = params.tokenConfig.token;
 
         // Add token to the pool's token array
-        _poolTokens[pool].push(token);
-        TokenInfo memory tokenInfo = TokenInfo({
-            tokenType: tokenConfig.tokenType,
-            rateProvider: tokenConfig.rateProvider,
-            paysYieldFees: tokenConfig.paysYieldFees
-        });
-        _poolTokenInfo[pool][token] = tokenInfo;
+        _poolTokens[params.pool].push(token);
 
-        tokenIndex = _poolTokens[pool].length - 1;
+        // Add the token to the pool's token info mapping
+        TokenInfo memory tokenInfo = TokenInfo({
+            tokenType: params.tokenConfig.tokenType,
+            rateProvider: params.tokenConfig.rateProvider,
+            paysYieldFees: params.tokenConfig.paysYieldFees
+        });
+        _poolTokenInfo[params.pool][token] = tokenInfo;
+
+        tokenIndex = _poolTokens[params.pool].length - 1;
 
         // Initialize balances for the new token
-        _poolTokenBalances[pool][tokenIndex] = PackedTokenBalance.toPackedBalance(initialAmount, initialAmount);
+        _poolTokenBalances[params.pool][tokenIndex] = PackedTokenBalance.toPackedBalance(
+            params.exactAmountIn,
+            params.exactAmountIn
+        );
 
-        // Transfer tokens from the user
-        token.safeTransferFrom(msg.sender, address(this), initialAmount);
+        // // Transfer tokens from the user @note already done in the hook on the Router
+        // token.safeTransferFrom(msg.sender, address(this), params.exactAmountIn);
 
         // If there is initial liquidity - calculate BPT. Add if (initialAmount > 0) {} else {revert()}
         // Load pool data for calculations
         // NOTE: try PoolData memory poolData = _loadPoolData(pool, Rounding.ROUND_DOWN);
-        PoolData memory poolData = _loadPoolData(pool, Rounding.ROUND_DOWN);
-        // PoolData memory poolData = _loadPoolDataUpdatingBalancesAndYieldFees(pool, Rounding.ROUND_UP);
+        PoolData memory poolData = _loadPoolData(params.pool, Rounding.ROUND_DOWN);
+        // PoolData memory _poolData = _loadPoolDataUpdatingBalancesAndYieldFees(pool, Rounding.ROUND_UP);
 
         // Total number of tokens in the pool (number of assets)
         uint256 numTokens = poolData.tokens.length;
 
+        // for (uint256 i = 0; i < numTokens; i++) {
+        //     console.log("poolData.tokens[", i, "] = ", address(poolData.tokens[i]));
+        //     console.log("poolData.balancesRaw[", i, "] = ", poolData.balancesRaw[i]);
+        //     console.log("poolData.balancesLiveScaled18[", i, "] = ", poolData.balancesLiveScaled18[i]);
+        //     console.log("poolData.tokenRates[", i, "] = ", poolData.tokenRates[i]);
+        //     console.log("poolData.decimalScalingFactors[", i, "] = ", poolData.decimalScalingFactors[i]);
+        // }
+
         // Array of input token amounts for BPT calculation (all zero except for the last)
         uint256[] memory exactAmountsIn = new uint256[](numTokens);
-        exactAmountsIn[tokenIndex] = initialAmount;
+        exactAmountsIn[tokenIndex] = params.exactAmountIn;
         // Do I really need to check the length of the array of all tokens or can I pass just one token that I'm adding?!
         InputHelpers.ensureInputLengthMatch(numTokens, exactAmountsIn.length);
 
@@ -551,7 +569,9 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
         IERC20 actualToken = poolData.tokens[tokenIndex];
 
         _takeDebt(actualToken, exactAmountsIn[tokenIndex]);
-        mapping(uint256 tokenIndex => bytes32 packedTokenBalance) storage poolBalances = _poolTokenBalances[pool];
+        mapping(uint256 tokenIndex => bytes32 packedTokenBalance) storage poolBalances = _poolTokenBalances[
+            params.pool
+        ];
 
         poolBalances[tokenIndex] = PackedTokenBalance.toPackedBalance(
             exactAmountsIn[tokenIndex],
@@ -563,11 +583,11 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
             console.log("exactAmountsInScaled18[", i, "] = ", exactAmountsInScaled18[i]);
         }
 
-        uint256 totalSupply_ = _totalSupply(pool);
+        uint256 totalSupply_ = _totalSupply(params.pool);
         exactAmountsInScaled18[tokenIndex] = 0;
 
         // bptAmountOut = IBasePool(pool).computeInvariant(exactAmountsInScaled18, Rounding.ROUND_DOWN);
-        bptAmountOut = IBasePool(pool).computeInvariant(poolData.balancesLiveScaled18, Rounding.ROUND_DOWN);
+        bptAmountOut = IBasePool(params.pool).computeInvariant(poolData.balancesLiveScaled18, Rounding.ROUND_DOWN);
         // (bptAmountOut, swapFeeAmounts) = BasePoolMath.computeAddLiquidityUnbalanced(
         //     poolData.balancesLiveScaled18,
         //     exactAmountsInScaled18,
@@ -582,9 +602,9 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
         console.log("bptAmountOut = ", bptAmountOut);
         console.log("totalSupply BEFORE = ", totalSupply_);
 
-        _mint(pool, msg.sender, bptAmountOut);
+        _mint(params.pool, msg.sender, bptAmountOut);
 
-        console.log("totalSupply AFTER = ", _totalSupply(pool));
+        console.log("totalSupply AFTER = ", _totalSupply(params.pool));
 
         // -------
         // NOTE: delete everything below
@@ -627,7 +647,7 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
         // // Update balances for the new token
         // _poolTokenBalances[pool][tokenIndex] = PackedTokenBalance.toPackedBalance(initialAmount, initialAmount);
 
-        emit NewTokenAdded(pool, address(token), tokenIndex);
+        emit NewTokenAdded(params.pool, address(token), tokenIndex);
     }
 
     // function addNewToken(
@@ -691,6 +711,34 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
         // `_aggregateFeeAmounts` in storage.
         PoolData memory poolData = _loadPoolDataUpdatingBalancesAndYieldFees(params.pool, Rounding.ROUND_UP);
         InputHelpers.ensureInputLengthMatch(poolData.tokens.length, params.maxAmountsIn.length);
+
+        uint256 staticSwapFeePercentage = poolData.poolConfigBits.getStaticSwapFeePercentage();
+        console.log("staticSwapFeePercentage = ", staticSwapFeePercentage);
+
+        uint256 numTokens = poolData.tokens.length;
+        console.log("------ _loadPoolDataUpdatingBalancesAndYieldFees ------");
+        for (uint256 i = 0; i < numTokens; i++) {
+            console.log("- poolData.tokens[", i, "] = ", address(poolData.tokens[i]));
+            console.log("- poolData.balancesRaw[", i, "] = ", poolData.balancesRaw[i]);
+            console.log("- poolData.balancesLiveScaled18[", i, "] = ", poolData.balancesLiveScaled18[i]);
+            console.log("- poolData.tokenRates[", i, "] = ", poolData.tokenRates[i]);
+            console.log("- poolData.decimalScalingFactors[", i, "] = ", poolData.decimalScalingFactors[i]);
+            console.log("----------------------");
+        }
+
+        PoolData memory _poolData = _loadPoolData(params.pool, Rounding.ROUND_UP);
+        uint256 _staticSwapFeePercentage = _poolData.poolConfigBits.getStaticSwapFeePercentage();
+        console.log("staticSwapFeePercentage (from _poolData) = ", _staticSwapFeePercentage);
+
+        console.log("------ _loadPoolData ------");
+        for (uint256 i = 0; i < numTokens; i++) {
+            console.log("- _poolData.tokens[", i, "] = ", address(_poolData.tokens[i]));
+            console.log("- _poolData.balancesRaw[", i, "] = ", _poolData.balancesRaw[i]);
+            console.log("- _poolData.balancesLiveScaled18[", i, "] = ", _poolData.balancesLiveScaled18[i]);
+            console.log("- _poolData.tokenRates[", i, "] = ", _poolData.tokenRates[i]);
+            console.log("- _poolData.decimalScalingFactors[", i, "] = ", _poolData.decimalScalingFactors[i]);
+            console.log("----------------------");
+        }
 
         // Amounts are entering pool math, so round down.
         // Introducing `maxAmountsInScaled18` here and passing it through to _addLiquidity is not ideal,
@@ -900,6 +948,8 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
             // 3) Deltas: Debit of token[i] for amountInRaw.
             _takeDebt(token, amountInRaw);
 
+            console.log("* swapFeeAmounts[", i, "] before compute and charge", swapFeeAmounts[i]);
+
             // 4) Compute and charge protocol and creator fees.
             // swapFeeAmounts[i] is now raw instead of scaled.
             (swapFeeAmounts[i], locals.aggregateSwapFeeAmountRaw) = _computeAndChargeAggregateSwapFees(
@@ -909,6 +959,8 @@ contract Vault is IVaultMain, VaultCommon, Proxy {
                 token,
                 i
             );
+
+            console.log("* swapFeeAmounts[", i, "] after compute and charge", swapFeeAmounts[i]);
 
             // 5) Pool balances: raw and live.
             // We need regular balances to complete the accounting, and the upscaled balances

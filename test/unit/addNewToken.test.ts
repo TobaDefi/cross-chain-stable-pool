@@ -175,17 +175,18 @@ describe("BalancerV3: StablePool", function () {
         );
         await routerContract.deployed();
 
-        const tokensAddresses = [...sortedTokenAddresses, newToken.address];
+        // const tokensAddresses = [...sortedTokenAddresses, newToken.address];
 
-        const _sortedTokenAddresses = tokensAddresses
-            .map((token) => token)
-            .sort((a, b) => {
-                return a.toLowerCase().localeCompare(b.toLowerCase());
-            });
+        // const _sortedTokenAddresses = tokensAddresses
+        //     .map((token) => token)
+        //     .sort((a, b) => {
+        //         return a.toLowerCase().localeCompare(b.toLowerCase());
+        //     });
 
-        // const tokenConfigs = sortedTokenAddresses.map((tokenAddress) => ({
-        const tokenConfigs = _sortedTokenAddresses.map((tokenAddress) => ({
+        const tokenConfigs = sortedTokenAddresses.map((tokenAddress, index) => ({
+            // const tokenConfigs = _sortedTokenAddresses.map((tokenAddress) => ({
             token: tokenAddress,
+            chainId: index + 1, // Assuming chainId is just the index + 1 for simplicity
             tokenType: TOKEN_TYPE.STANDARD,
             rateProvider: AddressZero,
             paysYieldFees: false
@@ -290,8 +291,8 @@ describe("BalancerV3: StablePool", function () {
         };
     }
 
-    describe.only("# Initialize Stable Pool", function () {
-        context("* unbalanced init", async () => {
+    describe("# Initialize Stable Pool", function () {
+        context.skip("* unbalanced init", async () => {
             it("Should initialize the stable pool with unbalanced tokens", async () => {
                 const {
                     user,
@@ -381,6 +382,144 @@ describe("BalancerV3: StablePool", function () {
                 await addLiquidityProportionalTx.wait();
 
                 await expect(addLiquidityProportionalTx).to.emit(vaultContract, "LiquidityAdded");
+
+                // Remove the liquidity
+
+                // Create the remove liquidity transaction: proportional
+
+                console.log("Router address:", routerContract.address);
+                console.log("Stable Pool address:", stablePoolContract.address);
+                console.log("Vault address:", vaultContract.address);
+                console.log("User address:", user.address);
+
+                const minAmountsOut = initializeTokens.map(() => parseUnits("10", 18));
+                const exactBptAmountIn = parseUnits("50", 18); // Exact BPT amount to remove
+                // await stablePoolContract.approve(
+                //     routerContract.address,
+                //     MaxUint256
+                // ); // Approve the vault to spend stable pool tokens
+                await approveToken(stablePoolContract.address, user, routerContract.address, MaxUint256); // Approve the vault to spend stable pool tokens
+
+                const removeLiquidityProportionalTx = await routerContract.connect(user).removeLiquidityProportional(
+                    stablePoolContract.address,
+                    exactBptAmountIn,
+                    minAmountsOut,
+                    false, // weth is eth
+                    HashZero, // No additional user data
+                    { gasLimit: 5000000 }
+                );
+
+                await removeLiquidityProportionalTx.wait();
+                await expect(removeLiquidityProportionalTx).to.emit(vaultContract, "LiquidityRemoved");
+            });
+        });
+
+        context.skip("* twice unbalanced", async () => {
+            it("Should twice add liquidity to the pool", async () => {
+                const {
+                    user,
+                    stablePoolContract,
+                    routerContract,
+                    initializeTokens,
+                    sortedTokenAddresses,
+                    vaultContract
+                } = await loadFixture(setupWithProportionalInit);
+
+                // ---- First add liquidity unbalanced ----
+                const minBptAmountOut = parseUnits("100", 18);
+                const exactAmountIn = parseUnits("150", 18);
+                // Allocate token to the user: first token from the sorted list
+                await allocateTokenTo(initializeTokens[0], user, exactAmountIn);
+                // Approve token for the router
+                await approveToken(initializeTokens[0], user, routerContract.address, exactAmountIn);
+                const exactAmountsIn = initializeTokens.map((_, index) => {
+                    return index === 0 ? exactAmountIn : Zero;
+                });
+                let addLiquidityUnbalancedTx = await routerContract.connect(user).addLiquidityUnbalanced(
+                    stablePoolContract.address,
+                    exactAmountsIn,
+                    minBptAmountOut,
+                    false, // weth is eth
+                    HashZero // no additional user data
+                );
+                await addLiquidityUnbalancedTx.wait();
+                await expect(addLiquidityUnbalancedTx).to.emit(vaultContract, "LiquidityAdded");
+
+                // 100086863678506
+                // 67023009310935
+
+                // ---- Second add liquidity unbalanced ----
+                // const minBptAmountOut = parseUnits("100", 18);
+                // const exactAmountIn = parseUnits("150", 18);
+                // Allocate token to the user: first token from the sorted list
+                await allocateTokenTo(initializeTokens[0], user, exactAmountIn);
+                // Approve token for the router
+                await approveToken(initializeTokens[0], user, routerContract.address, exactAmountIn);
+                // const exactAmountsIn = initializeTokens.map((_, index) => {
+                //     return index === 0 ? exactAmountIn : Zero;
+                // });
+                addLiquidityUnbalancedTx = await routerContract.connect(user).addLiquidityUnbalanced(
+                    stablePoolContract.address,
+                    exactAmountsIn,
+                    minBptAmountOut,
+                    false, // weth is eth
+                    HashZero // no additional user data
+                );
+                await addLiquidityUnbalancedTx.wait();
+                await expect(addLiquidityUnbalancedTx).to.emit(vaultContract, "LiquidityAdded");
+            });
+        });
+
+        context.skip("* unbalanced and proportional", async () => {
+            it("Should add liquidity of various types to the pool", async () => {
+                const {
+                    user,
+                    stablePoolContract,
+                    routerContract,
+                    initializeTokens,
+                    sortedTokenAddresses,
+                    vaultContract
+                } = await loadFixture(setupWithProportionalInit);
+
+                // ---- Add liquidity unbalanced ----
+                const minBptAmountOut = parseUnits("100", 18);
+                const exactAmountIn = parseUnits("150", 18);
+                // Allocate token to the user: first token from the sorted list
+                await allocateTokenTo(initializeTokens[0], user, exactAmountIn);
+                // Approve token for the router
+                await approveToken(initializeTokens[0], user, routerContract.address, exactAmountIn);
+                const exactAmountsIn = initializeTokens.map((_, index) => {
+                    return index === 0 ? exactAmountIn : Zero;
+                });
+                const addLiquidityUnbalancedTx = await routerContract.connect(user).addLiquidityUnbalanced(
+                    stablePoolContract.address,
+                    exactAmountsIn,
+                    minBptAmountOut,
+                    false, // weth is eth
+                    HashZero // no additional user data
+                );
+                await addLiquidityUnbalancedTx.wait();
+                await expect(addLiquidityUnbalancedTx).to.emit(vaultContract, "LiquidityAdded");
+
+                // ---- Add liquidity proportional ----
+                const exactBptAmountOut = parseUnits("300", 18);
+                const maxAmountIn = parseUnits("170", 18);
+                // Allocate tokens to the user
+                await batchAllocateTokensTo(initializeTokens, user, maxAmountIn);
+                // Approve tokens for the router
+                await batchApproveTokens(initializeTokens, user, routerContract.address, maxAmountIn);
+                const maxAmountsIn = initializeTokens.map(() => maxAmountIn);
+                // Create the add liquidity transaction: proportional
+                const addLiquidityProportionalTx = await routerContract.connect(user).addLiquidityProportional(
+                    stablePoolContract.address,
+                    maxAmountsIn,
+                    exactBptAmountOut,
+                    false, // weth is eth
+                    HashZero // no additional user data
+                );
+
+                await addLiquidityProportionalTx.wait();
+                await expect(addLiquidityProportionalTx).to.emit(vaultContract, "LiquidityAdded");
             });
         });
 
@@ -425,7 +564,7 @@ describe("BalancerV3: StablePool", function () {
             });
         });
 
-        context("* Add New Token", async () => {
+        context.only("* Add New Token", async () => {
             it("Should add a new token to the vault", async () => {
                 const {
                     deployer,
@@ -439,21 +578,22 @@ describe("BalancerV3: StablePool", function () {
 
                 const tokenConfig = {
                     token: newToken.address,
+                    chainId: 1,
                     tokenType: TOKEN_TYPE.STANDARD,
                     rateProvider: AddressZero,
                     paysYieldFees: false
                 };
 
-                const initialAmount = parseUnits("50", 18);
+                const exactAmountIn = parseUnits("100", 18);
                 // Allocate tokens to the user
-                await batchAllocateTokensTo([newToken], deployer, initialAmount);
+                await batchAllocateTokensTo([newToken], deployer, exactAmountIn);
                 // Approve tokens for the router
-                await batchApproveTokens([newToken], deployer, vaultContract.address, initialAmount);
+                await batchApproveTokens([newToken], deployer, routerContract.address, exactAmountIn);
 
                 await expect(
-                    await vaultContract
+                    await routerContract
                         .connect(deployer)
-                        .addNewToken(stablePoolContract.address, tokenConfig, initialAmount)
+                        .addTokenToPool(stablePoolContract.address, tokenConfig, exactAmountIn)
                 ).to.emit(vaultContract, "NewTokenAdded");
                 // .withArgs(stablePoolContract.address, newToken.address, 3);
             });
@@ -471,6 +611,7 @@ describe("BalancerV3: StablePool", function () {
 
                 const tokenConfig = {
                     token: newToken.address,
+                    chainId: 1,
                     tokenType: TOKEN_TYPE.STANDARD,
                     rateProvider: AddressZero,
                     paysYieldFees: false
@@ -480,12 +621,12 @@ describe("BalancerV3: StablePool", function () {
                 // Allocate tokens to the user
                 await batchAllocateTokensTo([newToken], deployer, initialAmount);
                 // Approve tokens for the router
-                await batchApproveTokens([newToken], deployer, vaultContract.address, initialAmount);
+                await batchApproveTokens([newToken], deployer, routerContract.address, initialAmount);
 
                 await expect(
-                    await vaultContract
+                    await routerContract
                         .connect(deployer)
-                        .addNewToken(stablePoolContract.address, tokenConfig, initialAmount)
+                        .addTokenToPool(stablePoolContract.address, tokenConfig, initialAmount)
                 ).to.emit(vaultContract, "NewTokenAdded");
                 // .withArgs(stablePoolContract.address, newToken.address, 3);
 

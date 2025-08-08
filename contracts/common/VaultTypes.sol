@@ -2,10 +2,17 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IERC4626 } from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 
-import { IRateProvider } from "./IRateProvider.sol";
+import {IRateProvider} from "./IRateProvider.sol";
+
+struct AddTokenToPoolParams {
+    address pool;
+    address sender;
+    TokenConfig tokenConfig;
+    uint256 exactAmountIn;
+}
 
 /**
  * @notice Represents a pool's liquidity management configuration.
@@ -204,12 +211,14 @@ enum TokenType {
  * validation checks. `TokenConfig` is only used for registration, and is never put into storage (see `TokenInfo`).
  *
  * @param token The token address
+ * @param chainId The chain ID of the token, used to ensure cross-chain compatibility
  * @param tokenType The token type (see the enum for supported types)
  * @param rateProvider The rate provider for a token (see further documentation above)
  * @param paysYieldFees Flag indicating whether yield fees should be charged on this token
  */
 struct TokenConfig {
     IERC20 token;
+    uint256 chainId;
     TokenType tokenType;
     IRateProvider rateProvider;
     bool paysYieldFees;

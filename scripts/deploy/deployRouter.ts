@@ -14,11 +14,11 @@ async function deploy() {
     const [deployer] = await ethers.getSigners();
 
     const args = {
-        vault: "0x1C8df36391afBe880Ed566486f95F37D84c0CAd1",
-        weth: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+        vault: "0x1541CA9df8774D72Bc2f56DE44f5C019Cea4F180",
+        weth: "0x0000000000000000000000000000000000000000", // WETH address
         // permit2: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
         routerVersion:
-            '{"name":"Router""version":2"deployment":"20250715-v3-router-v2"}'
+            '{"name":"Router""version":1"deployment":"20250808"}'
     };
 
     console.log("\n --- Deployed data --- \n");

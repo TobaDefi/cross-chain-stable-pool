@@ -68,5 +68,45 @@
                 "chainId": 84532
             }
         }
+    },
+    "zeta_testnet": {
+        "old": {},
+        "new": {
+            "VaultAdmin": {
+                "address": "0xe74f518fb4ebb3a7fc5905789C8437985B69F75E",
+                "deployedBlock": 11954590,
+                "chainId": 7001
+            },
+            "VaultExtension": {
+                "address": "0xA2bE90ff2c7D617ef16A1cad293d63D10899E8C3",
+                "deployedBlock": 11914911,
+                "chainId": 7001
+            },
+            "ProtocolFeeController": {
+                "address": "0x19Df77C93CD413fb07Aca6d2b25142a62C105d7A",
+                "deployedBlock": 11914913,
+                "chainId": 7001
+            },
+            "Vault": {
+                "address": "0x1541CA9df8774D72Bc2f56DE44f5C019Cea4F180",
+                "deployedBlock": 11914914,
+                "chainId": 7001
+            },
+            "uEthStablePool": {
+                "address": "0x8c8b1538e753C053d96716e5063a6aD54A3dBa47",
+                "deployedBlock": 11914916,
+                "chainId": 7001
+            },
+            "Router": {
+                "address": "0xB4a9584e508E1dB7ebb8114573D39A69189CE1Ca",
+                "deployedBlock": 11967869,
+                "chainId": 7001
+            },
+            "StablePool": {
+                "address": "0x21B9f66E532eb8A2Fa5Bf6623aaa94857d77f1Cb",
+                "deployedBlock": 11954668,
+                "chainId": 7001
+            }
+        }
     }
 }

@@ -167,6 +167,15 @@ interface IVaultExtension {
      */
     function getPoolTokens(address pool) external view returns (IERC20[] memory tokens);
 
+
+    /**
+     * @notice Gets the token registered to a pool for a specific chain ID.
+     * @param pool Address of the pool
+     * @param chainId Chain ID to get the token for
+     * @return token The token registered to the pool for the specified chain ID
+     */
+    function getPoolTokenByChainId(address pool, uint256 chainId) external view returns (IERC20 token);
+
     /**
      * @notice Gets pool token rates.
      * @dev This function performs external calls if tokens are yield-bearing. All returned arrays are in token
