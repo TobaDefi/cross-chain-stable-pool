@@ -2,23 +2,18 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { IProtocolFeeController } from "./IProtocolFeeController.sol";
-import { IVaultExtension } from "./IVaultExtension.sol";
-import { IAuthorizer } from "./IAuthorizer.sol";
-import { IHooks } from "./IHooks.sol";
+import {IProtocolFeeController} from "../interfaces/IProtocolFeeController.sol";
+import {IVaultExtension} from "../interfaces/IVaultExtension.sol";
+import {IAuthorizer} from "../interfaces/IAuthorizer.sol";
 import "./VaultTypes.sol";
 
-import { StorageSlotExtension } from "./StorageSlotExtension.sol";
-import {
-    TransientStorageHelpers,
-    TokenDeltaMappingSlotType,
-    UintToAddressToBooleanMappingSlot
-} from "./TransientStorageHelpers.sol";
+import {StorageSlotExtension} from "../libs/StorageSlotExtension.sol";
+import {TransientStorageHelpers, TokenDeltaMappingSlotType, UintToAddressToBooleanMappingSlot} from "../libs/TransientStorageHelpers.sol";
 
-import { VaultStateBits } from "./VaultStateLib.sol";
-import { PoolConfigBits } from "./PoolConfigLib.sol";
+import {VaultStateBits} from "../libs/VaultStateLib.sol";
+import {PoolConfigBits} from "../libs/PoolConfigLib.sol";
 
 // solhint-disable max-states-count
 
@@ -81,9 +76,6 @@ contract VaultStorage {
 
     // Accounts assigned to specific roles; e.g., pauseManager, swapManager.
     mapping(address pool => PoolRoleAccounts roleAccounts) internal _poolRoleAccounts;
-
-    // The hooks contracts associated with each pool.
-    // mapping(address pool => IHooks hooksContract) internal _hooksContracts; // @todo delete
 
     // The set of tokens associated with each pool.
     mapping(address pool => IERC20[] poolTokens) internal _poolTokens;

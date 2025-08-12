@@ -2,32 +2,28 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Address } from "@openzeppelin/contracts/utils/Address.sol";
-// import { IPermit2 } from "@uniswap/permit2/src/interfaces/IPermit2.sol"; // @todo delete
+import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+// @todo delete or implement
+// import { IPermit2 } from "@uniswap/permit2/src/interfaces/IPermit2.sol";
+import {IRouterCommon} from "../interfaces/IRouterCommon.sol";
+import {IWETH} from "../interfaces/IWETH.sol";
+import {IAllowanceTransfer} from "@uniswap/permit2/src/interfaces/IAllowanceTransfer.sol";
+import {IVault} from "../interfaces/IVault.sol";
 
-import { IRouterCommon } from "./IRouterCommon.sol";
-import { IWETH } from "./IWETH.sol";
-import { IAllowanceTransfer } from "@uniswap/permit2/src/interfaces/IAllowanceTransfer.sol";
-import { IVault } from "./IVault.sol";
+import {InputHelpers} from "../libs/InputHelpers.sol";
+import {RevertCodec} from "../libs/RevertCodec.sol";
+import {Version} from "./Version.sol";
+import {ReentrancyGuardTransient} from "./ReentrancyGuardTransient.sol";
+import {StorageSlotExtension} from "../libs/StorageSlotExtension.sol";
+import {TransientStorageHelpers} from "../libs/TransientStorageHelpers.sol";
 
-import { InputHelpers } from "./InputHelpers.sol";
-import { RevertCodec } from "./RevertCodec.sol";
-import { Version } from "./Version.sol";
-import {
-    ReentrancyGuardTransient
-} from "./ReentrancyGuardTransient.sol";
-import { StorageSlotExtension } from "./StorageSlotExtension.sol";
-import {
-    TransientStorageHelpers
-} from "./TransientStorageHelpers.sol";
-
-import { SenderGuard } from "./SenderGuard.sol";
-import { RouterWethLib } from "./RouterWethLib.sol";
-import { VaultGuard } from "./VaultGuard.sol";
+import {SenderGuard} from "./SenderGuard.sol";
+import {RouterWethLib} from "../libs/RouterWethLib.sol";
+import {VaultGuard} from "./VaultGuard.sol";
 
 /**
  * @notice Abstract base contract for functions shared among all Routers.
@@ -52,7 +48,8 @@ abstract contract RouterCommon is IRouterCommon, SenderGuard, VaultGuard, Reentr
     // solhint-disable-next-line var-name-mixedcase
     IWETH internal immutable _weth;
 
-    // IPermit2 internal immutable _permit2; // @todo delete
+    // @todo delete
+    // IPermit2 internal immutable _permit2;
 
     /**
      * @notice Locks the return of excess ETH to the sender until the end of the function.
@@ -80,11 +77,13 @@ abstract contract RouterCommon is IRouterCommon, SenderGuard, VaultGuard, Reentr
     constructor(
         IVault vault,
         IWETH weth,
-        // IPermit2 permit2, // @todo delete
+        // @todo delete
+        // IPermit2 permit2,
         string memory routerVersion
     ) SenderGuard() VaultGuard(vault) Version(routerVersion) {
         _weth = weth;
-        //_permit2 = permit2; // @todo delete
+        // @todo delete
+        //_permit2 = permit2;
     }
 
     /// @inheritdoc IRouterCommon
@@ -93,10 +92,12 @@ abstract contract RouterCommon is IRouterCommon, SenderGuard, VaultGuard, Reentr
     }
 
     /// @inheritdoc IRouterCommon
-    // function getPermit2() external view returns (IPermit2) { // @todo delete
+    // @todo delete
+    // function getPermit2() external view returns (IPermit2) {
     function getPermit2() external view returns (address) {
-        // return _permit2; // @todo delete
-        return address(0); 
+        // @todo delete
+        // return _permit2;
+        return address(0);
     }
 
     /*******************************************************************************
@@ -175,8 +176,8 @@ abstract contract RouterCommon is IRouterCommon, SenderGuard, VaultGuard, Reentr
             // and trusted contracts.
             //
             // See https://www.immunebytes.com/blog/permit2-erc-20-token-approvals-and-associated-risks/.
-
-            // _permit2.permit(msg.sender, permit2Batch, permit2Signature); // @todo delete
+            // @todo delete
+            // _permit2.permit(msg.sender, permit2Batch, permit2Signature);
         }
     }
 
@@ -258,7 +259,8 @@ abstract contract RouterCommon is IRouterCommon, SenderGuard, VaultGuard, Reentr
         } else {
             if (amountIn > 0) {
                 // Send the tokenIn amount to the Vault.
-                // _permit2.transferFrom(sender, address(_vault), amountIn.toUint160(), address(tokenIn)); // @todo delete
+                // @todo delete
+                // _permit2.transferFrom(sender, address(_vault), amountIn.toUint160(), address(tokenIn));
                 IERC20(tokenIn).transferFrom(sender, address(_vault), amountIn.toUint160());
                 _vault.settle(tokenIn, amountIn);
             }

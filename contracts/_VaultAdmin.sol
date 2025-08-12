@@ -2,27 +2,29 @@
 
 pragma solidity ^0.8.24;
 
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import { IERC4626 } from "@openzeppelin/contracts/interfaces/IERC4626.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// @todo wip
+// import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import { IProtocolFeeController } from "./common/IProtocolFeeController.sol";
-import { IAuthorizer } from "./common/IAuthorizer.sol";
-import { IVaultAdmin } from "./common/IVaultAdmin.sol";
-import { Rounding } from "./common/VaultTypes.sol";
-import { IVault } from "./common/IVault.sol";
+import {IProtocolFeeController} from "./interfaces/IProtocolFeeController.sol";
+import {IAuthorizer} from "./interfaces/IAuthorizer.sol";
+import {IVaultAdmin} from "./interfaces/IVaultAdmin.sol";
+import {Rounding} from "./common/VaultTypes.sol";
+import {IVault} from "./interfaces/IVault.sol";
 
-import { PackedTokenBalance } from "./common/PackedTokenBalance.sol";
-import { EVMCallModeHelpers } from "./common/EVMCallModeHelpers.sol";
-import { Authentication } from "./common/Authentication.sol";
-import { FixedPoint } from "./common/FixedPoint.sol";
+import {PackedTokenBalance} from "./libs/PackedTokenBalance.sol";
+import {EVMCallModeHelpers} from "./libs/EVMCallModeHelpers.sol";
+import {Authentication} from "./common/Authentication.sol";
+import {FixedPoint} from "./libs/FixedPoint.sol";
 
-import { VaultStateBits, VaultStateLib } from "./common/VaultStateLib.sol";
-import { PoolConfigLib, PoolConfigBits } from "./common/PoolConfigLib.sol";
-import { VaultExtensionsLib } from "./common/VaultExtensionsLib.sol";
-import { VaultCommon } from "./common/VaultCommon.sol";
-import { VaultGuard } from "./common/VaultGuard.sol";
+import {VaultStateBits, VaultStateLib} from "./libs/VaultStateLib.sol";
+import {PoolConfigLib, PoolConfigBits} from "./libs/PoolConfigLib.sol";
+import {VaultExtensionsLib} from "./libs/VaultExtensionsLib.sol";
+import {VaultCommon} from "./common/VaultCommon.sol";
+import {VaultGuard} from "./common/VaultGuard.sol";
 
 /**
  * @dev Bytecode extension for the Vault containing permissioned functions. Complementary to `VaultExtension`,
@@ -70,6 +72,8 @@ contract VaultAdmin is IVaultAdmin, VaultCommon, Authentication, VaultGuard {
 
     constructor(
         IVault mainVault,
+        // @todo wip
+        // address protocolMainAdmin,
         uint32 pauseWindowDuration,
         uint32 bufferPeriodDuration,
         uint256 minTradeAmount,
@@ -91,6 +95,8 @@ contract VaultAdmin is IVaultAdmin, VaultCommon, Authentication, VaultGuard {
 
         _MINIMUM_TRADE_AMOUNT = minTradeAmount;
         _MINIMUM_WRAP_AMOUNT = minWrapAmount;
+        // @todo wip
+        // _grantRole(DEFAULT_ADMIN_ROLE, protocolMainAdmin);
     }
 
     /*******************************************************************************

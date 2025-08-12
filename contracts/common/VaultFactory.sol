@@ -2,21 +2,19 @@
 
 pragma solidity ^0.8.24;
 
-import { Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
 
-import { IProtocolFeeController } from "./IProtocolFeeController.sol";
-import { IAuthorizer } from "./IAuthorizer.sol";
-import { IVault } from "./IVault.sol";
+import {IProtocolFeeController} from "../interfaces/IProtocolFeeController.sol";
+import {IAuthorizer} from "../interfaces/IAuthorizer.sol";
+import {IVault} from "../interfaces/IVault.sol";
 
-import {
-    ReentrancyGuardTransient
-} from "./ReentrancyGuardTransient.sol";
-import { CREATE3 } from "./CREATE3.sol";
+import {ReentrancyGuardTransient} from "./ReentrancyGuardTransient.sol";
+import {CREATE3} from "../libs/CREATE3.sol";
 
-import { VaultExtension } from "../_VaultExtension.sol";
-import { VaultAdmin } from "../_VaultAdmin.sol";
+import {VaultExtension} from "../_VaultExtension.sol";
+import {VaultAdmin} from "../_VaultAdmin.sol";
 
 /// @notice One-off factory to deploy the Vault at a specific address.
 contract VaultFactory is ReentrancyGuardTransient, Ownable2Step {

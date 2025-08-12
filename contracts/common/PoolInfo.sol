@@ -5,8 +5,8 @@ pragma solidity ^0.8.24;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import { TokenInfo, PoolConfig } from "./VaultTypes.sol";
-import { IPoolInfo } from "./IPoolInfo.sol";
-import { IVault } from "./IVault.sol";
+import { IPoolInfo } from "../interfaces/IPoolInfo.sol";
+import { IVault } from "../interfaces/IVault.sol";
 
 /**
  * @notice Standard implementation of the `IPoolInfo` interface.

@@ -2,20 +2,16 @@
 
 pragma solidity ^0.8.24;
 
-import { IPoolVersion } from "./IPoolVersion.sol";
-import { IVaultErrors } from "./IVaultErrors.sol";
-import { IVault } from "./IVault.sol";
-import {
-    TokenConfig,
-    PoolRoleAccounts,
-    LiquidityManagement
-} from "./VaultTypes.sol";
+import {IPoolVersion} from "../interfaces/IPoolVersion.sol";
+import {IVaultErrors} from "../interfaces/IVaultErrors.sol";
+import {IVault} from "../interfaces/IVault.sol";
+import {TokenConfig, PoolRoleAccounts, LiquidityManagement} from "./VaultTypes.sol";
 
-import { BasePoolFactory } from "./BasePoolFactory.sol";
-import { StableMath } from "./StableMath.sol";
-import { Version } from "./Version.sol";
+import {BasePoolFactory} from "./BasePoolFactory.sol";
+import {StableMath} from "../libs/StableMath.sol";
+import {Version} from "./Version.sol";
 
-import { StablePool } from "../_StablePool.sol";
+import {StablePool} from "../_StablePool.sol";
 
 /**
  * @notice General Stable Pool factory.

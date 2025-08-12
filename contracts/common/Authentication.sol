@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.24;
 
-import { IAuthentication } from "./IAuthentication.sol";
+import {IAuthentication} from "../interfaces/IAuthentication.sol";
 
 /**
  * @notice Building block for performing access control on external functions.

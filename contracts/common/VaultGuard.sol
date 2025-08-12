@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.24;
 
-import { IVaultErrors } from "./IVaultErrors.sol";
-import { IVault } from "./IVault.sol";
+import {IVaultErrors} from "../interfaces/IVaultErrors.sol";
+import {IVault} from "../interfaces/IVault.sol";
 
 /// @notice Contract that shares the modifier `onlyVault`.
 contract VaultGuard {

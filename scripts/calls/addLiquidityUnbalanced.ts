@@ -11,20 +11,23 @@ import { Router, Router__factory, StablePool__factory, StablePool } from "../../
 import { ZRC20__factory, ZRC20 } from "../../test/helpers/types/contracts";
 
 import { MaxUint256 } from "@uniswap/permit2-sdk";
-import { token } from "../../typechain-types/@openzeppelin/contracts";
 import { BigNumber } from "../../test/helpers";
 
+/// ------- Add Liquidity Unbalanced Script -------
+// NOTE: Run this script with the command:
+// $ npx hardhat run scripts/calls/addLiquidityUnbalanced.ts --no-compile --network zeta_testnet
+/// ---------------------------------------
 const ROUTER_ADDRESS = "0x997834A5F0c437757f96Caf33f28A617A8C7f340";
 
 const POOL_ADDRESSES: { [key: string]: string } = {
     uETH: "0x8c8b1538e753C053d96716e5063a6aD54A3dBa47",
-    uUSDC: "0x21B9f66E532eb8A2Fa5Bf6623aaa94857d77f1Cb"
+    uUSDC: "0xCe83BFd5171237aF064A4C6203Ff3902D44fd4BD"
 };
 
 // NOTE: Change this to the pool you want to add liquidity to
 const CURRENT_POOL = "uETH";
 // NOTE: Set the amount of tokens to transfer without decimals.
-const TOKEN_AMOUNT = "0.01";
+const TOKEN_AMOUNT = "0.05";
 
 async function main() {
     const [caller] = await ethers.getSigners();
@@ -51,7 +54,7 @@ async function main() {
     const tokenData: { decimals: number; symbol: string }[] = [];
     const tokenAmounts: BigNumber[] = [];
 
-    for (const tokenAddress of tokenAddresses) {
+    for (const [index, tokenAddress] of tokenAddresses.entries()) {
         // Connect to token contracts
         const tokenContract = ZRC20__factory.connect(tokenAddress, caller);
         tokenContracts.push(tokenContract);
@@ -62,13 +65,21 @@ async function main() {
         // Check user balance of ERC20 token before the add liquidity
         const userBalanceBefore = await tokenContract.balanceOf(caller.address);
         userBalancesBefore.push(userBalanceBefore);
-        if (userBalanceBefore.lt(parseUnits(TOKEN_AMOUNT, tokenDecimal))) {
-            console.error(`\n ❌ Insufficient balance: ${formatUnits(userBalanceBefore, tokenDecimal)} ${tokenSymbol}`);
+        if (userBalanceBefore.lt(TOKEN_AMOUNT[index])) {
+            console.error(
+                `\n ❌ Insufficient balance: ${formatUnits(userBalanceBefore, tokenData[index].decimals)} ${
+                    tokenData[index].symbol
+                }`
+            );
             return;
+        } else {
+            console.log(
+                `\nUser balance before add liquidity: ${formatUnits(
+                    userBalancesBefore[index],
+                    tokenData[index].decimals
+                )} ${tokenData[index].symbol}`
+            );
         }
-        console.log(
-            `\nUser balance before add liquidity: ${formatUnits(userBalanceBefore, tokenDecimal)} ${tokenSymbol}`
-        );
 
         // Approve the token to the Router contract if needed
         const allowance = await tokenContract.allowance(caller.address, routerContract.address);
@@ -80,7 +91,12 @@ async function main() {
             console.log(`\n✅ Approval TX hash: ${approveTx.hash}`);
         }
 
-        tokenAmounts.push(parseUnits(TOKEN_AMOUNT, tokenDecimal));
+        // // tokenAmounts.push(parseUnits(TOKEN_AMOUNT, tokenDecimal));
+        // if (index === 0) {
+        //     tokenAmounts.push(parseUnits(TOKEN_AMOUNT, tokenDecimal));
+        // } else {
+        //     tokenAmounts.push(Zero);
+        // }
     }
 
     const balanceLPBefore = await poolContract.balanceOf(caller.address);

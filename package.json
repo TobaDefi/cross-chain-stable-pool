@@ -32,7 +32,7 @@
         "dev:hh-check": "npx hardhat check",
         "dev:node": "npx hardhat node",
         "dev:flatten": "npm run compile-all && npx hardhat flatten",
-        "postinstall": "npm run compile-all && npm run abi && npm run docs"
+        "postinstall": "npm run compile-all && npm run abi && npm run docs && npm run generate-types"
     },
     "dependencies": {
         "@openzeppelin/contracts": "5.1.0",

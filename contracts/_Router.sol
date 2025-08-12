@@ -9,12 +9,12 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 // @todo revert this in the future
 // import { IPermit2 } from "@uniswap/permit2/src/interfaces/IPermit2.sol";
 
-import {IWETH} from "./common/IWETH.sol";
-import {IRouter} from "./common/IRouter.sol";
-import {IVault} from "./common/IVault.sol";
+import {IWETH} from "./interfaces/IWETH.sol";
+import {IRouter} from "./interfaces/IRouter.sol";
+import {IVault} from "./interfaces/IVault.sol";
 import "./common/VaultTypes.sol";
 
-import {RouterWethLib} from "./common/RouterWethLib.sol";
+import {RouterWethLib} from "./libs/RouterWethLib.sol";
 import {RouterCommon} from "./common/RouterCommon.sol";
 
 import {IGatewayZEVM} from "@zetachain/protocol-contracts/contracts/zevm/interfaces/IGatewayZEVM.sol";
@@ -118,8 +118,10 @@ contract Router is IRouter, RouterCommon, UniversalContract {
                     maxAmountsIn: exactAmountsIn,
                     minBptAmountOut: _msg.minBptAmountOut,
                     kind: AddLiquidityKind.UNBALANCED,
-                    wethIsEth: false, // @todo check that it is not needed
-                    userData: "0x" // @todo maybe add some data here?
+                    // @todo check that it is not needed
+                    wethIsEth: false,
+                    // @todo maybe add some data here?
+                    userData: "0x"
                 })
             )
         );
@@ -157,10 +159,13 @@ contract Router is IRouter, RouterCommon, UniversalContract {
             out,
             targetToken,
             RevertOptions({
-                revertAddress: address(0), // @todo implement revert address
-                callOnRevert: false, // @todo implement revert logic
+                // @todo implement revert address
+                revertAddress: address(0),
+                // @todo implement revert logic
+                callOnRevert: false,
                 abortAddress: address(0),
-                revertMessage: "0x", // @todo implement revert message
+                // @todo implement revert message
+                revertMessage: "0x",
                 onRevertGasLimit: GAS_LIMIT
             })
         );
@@ -333,11 +338,13 @@ contract Router is IRouter, RouterCommon, UniversalContract {
             })
         );
 
-        if (params.exactAmountIn == 0) revert Todo(); // @todo need to implement revert reason
+        // @todo need to implement revert reason
+        if (params.exactAmountIn == 0) revert Todo();
 
         IERC20[] memory tokens = _vault.getPoolTokens(params.pool);
 
-        if (tokenIndex > tokens.length - 1) revert Todo(); // @todo need to implement revert reason
+        // @todo need to implement revert reason
+        if (tokenIndex > tokens.length - 1) revert Todo();
 
         IERC20(tokens[tokenIndex]).transferFrom(params.sender, address(_vault), params.exactAmountIn.toUint160());
         _vault.settle(tokens[tokenIndex], params.exactAmountIn);

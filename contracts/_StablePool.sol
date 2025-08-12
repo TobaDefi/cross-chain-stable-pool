@@ -4,17 +4,17 @@ pragma solidity ^0.8.24;
 
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import {ISwapFeePercentageBounds} from "./common/ISwapFeePercentageBounds.sol";
-import {IUnbalancedLiquidityInvariantRatioBounds} from "./common/IUnbalancedLiquidityInvariantRatioBounds.sol";
-import {IBasePool} from "./common/IBasePool.sol";
-import {IVault} from "./common/IVault.sol";
-import {IStablePool, StablePoolDynamicData, StablePoolImmutableData, AmplificationState} from "./common/IStablePool.sol";
+import {ISwapFeePercentageBounds} from "./interfaces/ISwapFeePercentageBounds.sol";
+import {IUnbalancedLiquidityInvariantRatioBounds} from "./interfaces/IUnbalancedLiquidityInvariantRatioBounds.sol";
+import {IBasePool} from "./interfaces/IBasePool.sol";
+import {IVault} from "./interfaces/IVault.sol";
+import {IStablePool, StablePoolDynamicData, StablePoolImmutableData, AmplificationState} from "./interfaces/IStablePool.sol";
 import "./common/VaultTypes.sol";
 
 import {BasePoolAuthentication} from "./common/BasePoolAuthentication.sol";
 import {BalancerPoolToken} from "./common/BalancerPoolToken.sol";
-import {FixedPoint} from "./common/FixedPoint.sol";
-import {StableMath} from "./common/StableMath.sol";
+import {FixedPoint} from "./libs/FixedPoint.sol";
+import {StableMath} from "./libs/StableMath.sol";
 import {Version} from "./common/Version.sol";
 import {PoolInfo} from "./common/PoolInfo.sol";
 

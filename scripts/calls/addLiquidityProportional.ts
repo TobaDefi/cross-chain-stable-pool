@@ -3,22 +3,26 @@ dotenv.config();
 
 import hre from "hardhat";
 const { ethers } = hre;
-
+import { VoidSigner } from "ethers";
 const { parseEther, parseUnits, formatEther, formatUnits, solidityPack } = ethers.utils;
+const { BigNumber } = ethers;
 const { Zero, AddressZero, HashZero } = ethers.constants;
 
 import { Router, Router__factory, StablePool__factory, StablePool } from "../../typechain-types";
 import { ZRC20__factory, ZRC20 } from "../../test/helpers/types/contracts";
 
 import { MaxUint256 } from "@uniswap/permit2-sdk";
-import { token } from "../../typechain-types/@openzeppelin/contracts";
 
-// const ROUTER_ADDRESS = "0x997834A5F0c437757f96Caf33f28A617A8C7f340"; // << old address
+/// ------- Add Liquidity Proportional Script -------
+// NOTE: Run this script with the command:
+// $ npx hardhat run scripts/calls/addLiquidityProportional.ts --no-compile --network zeta_testnet
+/// ---------------------------------------
+
 const ROUTER_ADDRESS = "0xB4a9584e508E1dB7ebb8114573D39A69189CE1Ca"; // << new address
 
 const POOL_ADDRESSES: { [key: string]: string } = {
     uETH: "0x8c8b1538e753C053d96716e5063a6aD54A3dBa47",
-    uUSDC: "0x21B9f66E532eb8A2Fa5Bf6623aaa94857d77f1Cb"
+    uUSDC: "0xCe83BFd5171237aF064A4C6203Ff3902D44fd4BD"
 };
 
 // NOTE: Change this to the pool you want to add liquidity to
@@ -29,11 +33,14 @@ const EXACT_BPT_AMOUNT_OUT = "0.01";
 async function main() {
     const [caller] = await ethers.getSigners();
     const currentNetwork = hre.network.name.toString();
+    const provider = ethers.provider;
+
+    const zero = new VoidSigner(AddressZero, provider);
 
     // Connect to the CompositeLiquidityRouter contract
-    const routerContract = Router__factory.connect(ROUTER_ADDRESS, caller) as Router;
+    const routerContract = Router__factory.connect(ROUTER_ADDRESS, provider) as Router;
     // Connect to the StablePool contract
-    const poolContract = StablePool__factory.connect(POOL_ADDRESSES[CURRENT_POOL], caller) as StablePool;
+    const poolContract = StablePool__factory.connect(POOL_ADDRESSES[CURRENT_POOL], provider) as StablePool;
     const poolDecimal = await poolContract.decimals();
     const poolSymbol = await poolContract.symbol();
     // Get the token addresses from the pool
@@ -46,55 +53,62 @@ async function main() {
     console.log("* ", currentNetwork, "- Network name");
     console.log("\n --- ------- ---- --- ");
 
+    let queryTx;
+
+    try {
+        queryTx = await routerContract
+            .connect(zero)
+            .callStatic.queryAddLiquidityProportional(
+                POOL_ADDRESSES[CURRENT_POOL],
+                parseUnits(EXACT_BPT_AMOUNT_OUT, poolDecimal),
+                zero.address,
+                HashZero
+            );
+    } catch (error) {
+        console.error("❌ Error querying add liquidity proportional:", error);
+        return;
+    }
+
+    const tokenAmountsIn = queryTx;
+
     const userBalancesBefore = [];
     const tokenContracts: ZRC20[] = [];
     const tokenData: { decimals: number; symbol: string }[] = [];
 
-    for (const tokenAddress of tokenAddresses) {
+    for (const [index, tokenAddress] of tokenAddresses.entries()) {
         // Connect to token contracts
         const tokenContract = ZRC20__factory.connect(tokenAddress, caller);
         tokenContracts.push(tokenContract);
         const tokenSymbol = await tokenContract.symbol();
         const tokenDecimal = await tokenContract.decimals();
         tokenData.push({ decimals: tokenDecimal, symbol: tokenSymbol });
-        // // Check user balance of ERC20 token before the deposit
+        // Check user balance of ERC20 token before the add liquidity
         const userBalanceBefore = await tokenContract.balanceOf(caller.address);
         userBalancesBefore.push(userBalanceBefore);
-        // Approve the token to the Router contract if needed
-        const allowance = await tokenContract.allowance(caller.address, routerContract.address);
-        if (allowance.lt(userBalanceBefore)) {
-            const approveTx = await tokenContract.connect(caller).approve(routerContract.address, MaxUint256);
-            await approveTx.wait(5);
-            console.log(`\n✅ Approval TX hash: ${approveTx.hash}`);
-        }
-    }
 
-    // Get the amounts of tokens to add liquidity
-    const tokenAmounts = await routerContract.callStatic.addLiquidityProportional(
-        POOL_ADDRESSES[CURRENT_POOL],
-        tokenAddresses.map(() => parseUnits(EXACT_BPT_AMOUNT_OUT, poolDecimal)),
-        parseUnits(EXACT_BPT_AMOUNT_OUT, poolDecimal),
-        false, // << weth is eth
-        HashZero // << No additional user data
-    );
-
-    for (const [index, tokenAmount] of tokenAmounts.entries()) {
-        // Check user balance of ERC20 token before the add liquidity
-
-        if (userBalancesBefore[index].lt(tokenAmount)) {
+        if (userBalanceBefore.lt(tokenAmountsIn[index])) {
             console.error(
-                `\n ❌ Insufficient balance: ${formatUnits(userBalancesBefore[index], tokenData[index].decimals)} ${
+                `\n ❌ Insufficient balance: ${formatUnits(userBalanceBefore, tokenData[index].decimals)} ${
                     tokenData[index].symbol
                 }`
             );
             return;
+        } else {
+            console.log(
+                `\nUser balance before add liquidity: ${formatUnits(
+                    userBalancesBefore[index],
+                    tokenData[index].decimals
+                )} ${tokenData[index].symbol}`
+            );
         }
-        console.log(
-            `\nUser balance before add liquidity: ${formatUnits(
-                userBalancesBefore[index],
-                tokenData[index].decimals
-            )} ${tokenData[index].symbol}`
-        );
+
+        // Approve the token to the Router contract if needed
+        const allowance = await tokenContract.allowance(caller.address, routerContract.address);
+        if (allowance.lt(tokenAmountsIn[index])) {
+            const approveTx = await tokenContract.connect(caller).approve(routerContract.address, MaxUint256);
+            await approveTx.wait(5);
+            console.log(`\n✅ Approval TX hash: ${approveTx.hash}`);
+        }
     }
 
     const balanceLPBefore = await poolContract.balanceOf(caller.address);
@@ -103,7 +117,7 @@ async function main() {
     // Create the add liquidity transaction: proportional
     const addLiquidityProportionalTx = await routerContract.addLiquidityProportional(
         POOL_ADDRESSES[CURRENT_POOL],
-        tokenAmounts.map((amount) => amount.mul(2)), // Add 100% more to the amounts
+        tokenAmountsIn.map((amount) => amount.mul(102).div(100)), // Add 2% slippage to each token amount
         parseUnits(EXACT_BPT_AMOUNT_OUT, await poolContract.decimals()),
         false, // << weth is eth
         HashZero // << No additional user data

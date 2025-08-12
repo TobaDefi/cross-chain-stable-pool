@@ -121,7 +121,7 @@ async function deploy() {
             name: "Universal USDC",
             symbol: "uUSDC",
             amplificationParameter: DEFAULT_AMP_FACTOR,
-            version: "1.0.0"
+            version: "1.1.0"
         },
         // vaultContract.address
         "0x1541CA9df8774D72Bc2f56DE44f5C019Cea4F180"
@@ -130,7 +130,7 @@ async function deploy() {
     const deployTx5 = (await stablePoolContract.deployed()).deployTransaction.wait();
     deployTxs.push(deployTx5);
     contractArgs.push([
-        { name: "Universal USDC", symbol: "uUSDC", amplificationParameter: DEFAULT_AMP_FACTOR, version: "1.0.0" },
+        { name: "Universal USDC", symbol: "uUSDC", amplificationParameter: DEFAULT_AMP_FACTOR, version: "1.1.0" },
         // vaultContract.address
         "0x1541CA9df8774D72Bc2f56DE44f5C019Cea4F180"
     ]);

@@ -4,9 +4,9 @@ pragma solidity ^0.8.24;
 
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-import { IERC20MultiTokenErrors } from "./IERC20MultiTokenErrors.sol";
+import { IERC20MultiTokenErrors } from "../interfaces/IERC20MultiTokenErrors.sol";
 
-import { EVMCallModeHelpers } from "./EVMCallModeHelpers.sol";
+import { EVMCallModeHelpers } from "../libs/EVMCallModeHelpers.sol";
 
 import { BalancerPoolToken } from "./BalancerPoolToken.sol";
 

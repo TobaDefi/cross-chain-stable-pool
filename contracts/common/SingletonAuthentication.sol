@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.24;
 
-import { IAuthorizer } from "./IAuthorizer.sol";
-import { IVault } from "./IVault.sol";
+import {IAuthorizer} from "../interfaces/IAuthorizer.sol";
+import {IVault} from "../interfaces/IVault.sol";
 
-import { CommonAuthentication } from "./CommonAuthentication.sol";
+import {CommonAuthentication} from "./CommonAuthentication.sol";
 
 /**
  * @notice Base contract suitable for Singleton contracts (e.g., pool factories) that have permissioned functions.

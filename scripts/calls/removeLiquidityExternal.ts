@@ -4,6 +4,9 @@ dotenv.config();
 import hre from "hardhat";
 const { ethers } = hre;
 
+import { VoidSigner } from 'ethers';
+// import { Signer } from 'ethers';
+
 const { parseEther, parseUnits, formatEther, formatUnits, solidityPack } = ethers.utils;
 const { Zero, AddressZero, HashZero } = ethers.constants;
 
@@ -32,9 +35,14 @@ const CHAIN_ID = 84532; // << Base Sepolia Chain ID
 async function main() {
     const [caller] = await ethers.getSigners();
     const currentNetwork = hre.network.name.toString();
+    const provider = ethers.provider;
+
+    // const  zero = new VoidSigner('0x0000000000000000000000000000000000000000', ethers.provider);
+    const  zero = new VoidSigner(AddressZero, ethers.provider);
+    // const  zero = new Signer(AddressZero, ethers.provider);
 
     // Connect to the CompositeLiquidityRouter contract
-    const routerContract = Router__factory.connect(ROUTER_ADDRESS, caller) as Router;
+    const routerContract = Router__factory.connect(ROUTER_ADDRESS, provider) as Router;
     // Connect to the StablePool contract
     const poolContract = StablePool__factory.connect(POOL_ADDRESSES[CURRENT_POOL], caller) as StablePool;
     const poolDecimal = await poolContract.decimals();
@@ -52,40 +60,49 @@ async function main() {
     console.log("* ", currentNetwork, "- Network name");
     console.log("\n --- ------- ---- --- ");
 
-    // Approve token for the router
-    const allowance = await poolContract.allowance(caller.address, ROUTER_ADDRESS);
-    if (allowance.lt(parseUnits(EXACT_BPT_AMOUNT_IN, poolDecimal))) {
-        const approvalTx = await poolContract.approve(ROUTER_ADDRESS, MaxUint256);
-        await approvalTx.wait();
-        console.log(`\n✅ Approval TX hash: ${approvalTx.hash}`);
-    }
-
-    const balanceLPBefore = await poolContract.balanceOf(caller.address);
-
-    if (balanceLPBefore.lt(parseUnits(EXACT_BPT_AMOUNT_IN, poolDecimal))) {
-        console.error(`\n ❌ Insufficient balance: ${formatUnits(balanceLPBefore, poolDecimal)} ${poolSymbol}`);
-        return;
-    }
-
-    console.log(
-        `\nUser balance of ${poolSymbol} before remove liquidity: ${formatUnits(balanceLPBefore, poolDecimal)}`
-    );
-
-    const minAmountOut = "1";
-    // Create the remove liquidity transaction: unbalanced
-    const removeLiquidityUnbalancedTx = await routerContract[
-        "removeLiquiditySingleTokenExactIn(address,uint256,uint256,uint256,bool,bytes)"
-    ](
+    const queryTx = await routerContract.connect(zero).callStatic.queryRemoveLiquidityProportional(
         POOL_ADDRESSES[CURRENT_POOL],
         parseUnits(EXACT_BPT_AMOUNT_IN, poolDecimal),
-        CHAIN_ID, // << Chain ID for the deposit network
-        minAmountOut,
-        false, // << weth is eth
-        HashZero, // << No additional user data
-        {
-            gasLimit: 5000000 // << Gas limit for the transaction
-        }
+        zero.address,
+        HashZero
     );
+
+    console.log(`\nQuery remove liquidity proportional result: ${queryTx}`);
+
+    // // Approve token for the router
+    // const allowance = await poolContract.allowance(caller.address, ROUTER_ADDRESS);
+    // if (allowance.lt(parseUnits(EXACT_BPT_AMOUNT_IN, poolDecimal))) {
+    //     const approvalTx = await poolContract.approve(ROUTER_ADDRESS, MaxUint256);
+    //     await approvalTx.wait();
+    //     console.log(`\n✅ Approval TX hash: ${approvalTx.hash}`);
+    // }
+
+    // const balanceLPBefore = await poolContract.balanceOf(caller.address);
+
+    // if (balanceLPBefore.lt(parseUnits(EXACT_BPT_AMOUNT_IN, poolDecimal))) {
+    //     console.error(`\n ❌ Insufficient balance: ${formatUnits(balanceLPBefore, poolDecimal)} ${poolSymbol}`);
+    //     return;
+    // }
+
+    // console.log(
+    //     `\nUser balance of ${poolSymbol} before remove liquidity: ${formatUnits(balanceLPBefore, poolDecimal)}`
+    // );
+
+    // const minAmountOut = "1";
+    // // Create the remove liquidity transaction: unbalanced
+    // const removeLiquidityUnbalancedTx = await routerContract[
+    //     "removeLiquiditySingleTokenExactIn(address,uint256,uint256,uint256,bool,bytes)"
+    // ](
+    //     POOL_ADDRESSES[CURRENT_POOL],
+    //     parseUnits(EXACT_BPT_AMOUNT_IN, poolDecimal),
+    //     CHAIN_ID, // << Chain ID for the deposit network
+    //     minAmountOut,
+    //     false, // << weth is eth
+    //     HashZero, // << No additional user data
+    //     {
+    //         gasLimit: 5000000 // << Gas limit for the transaction
+    //     }
+    // );
     // const removeLiquidityUnbalancedTx = await routerContract[
     //     "removeLiquiditySingleTokenExactIn(address,uint256,address,uint256,bool,bytes)"
     // ](
@@ -121,11 +138,11 @@ async function main() {
     //     }
     // );
 
-    await removeLiquidityUnbalancedTx.wait();
-    console.log(`\n✅ Remove unbalanced liquidity transaction hash: ${removeLiquidityUnbalancedTx.hash}\n`);
+    // await removeLiquidityUnbalancedTx.wait();
+    // console.log(`\n✅ Remove unbalanced liquidity transaction hash: ${removeLiquidityUnbalancedTx.hash}\n`);
 
-    const balanceLPAfters = await poolContract.balanceOf(caller.address);
-    console.log(`\nUser balance of ${poolSymbol} after remove liquidity: ${formatUnits(balanceLPAfters, poolDecimal)}`);
+    // const balanceLPAfters = await poolContract.balanceOf(caller.address);
+    // console.log(`\nUser balance of ${poolSymbol} after remove liquidity: ${formatUnits(balanceLPAfters, poolDecimal)}`);
 }
 
 main().catch((error) => {

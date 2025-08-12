@@ -2,31 +2,27 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC4626 } from "@openzeppelin/contracts/interfaces/IERC4626.sol";
-import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { ISwapFeePercentageBounds } from "./ISwapFeePercentageBounds.sol";
-import { PoolData, Rounding } from "./VaultTypes.sol";
-import { IVaultErrors } from "./IVaultErrors.sol";
-import { IVaultEvents } from "./IVaultEvents.sol";
+import {ISwapFeePercentageBounds} from "../interfaces/ISwapFeePercentageBounds.sol";
+import {PoolData, Rounding} from "./VaultTypes.sol";
+import {IVaultErrors} from "../interfaces/IVaultErrors.sol";
+import {IVaultEvents} from "../interfaces/IVaultEvents.sol";
 
-import { StorageSlotExtension } from "./StorageSlotExtension.sol";
-import { EVMCallModeHelpers } from "./EVMCallModeHelpers.sol";
-import { PackedTokenBalance } from "./PackedTokenBalance.sol";
-import { ScalingHelpers } from "./ScalingHelpers.sol";
-import {
-    ReentrancyGuardTransient
-} from "./ReentrancyGuardTransient.sol";
-import {
-    TransientStorageHelpers
-} from "./TransientStorageHelpers.sol";
+import {StorageSlotExtension} from "../libs/StorageSlotExtension.sol";
+import {EVMCallModeHelpers} from "../libs/EVMCallModeHelpers.sol";
+import {PackedTokenBalance} from "../libs/PackedTokenBalance.sol";
+import {ScalingHelpers} from "../libs/ScalingHelpers.sol";
+import {ReentrancyGuardTransient} from "./ReentrancyGuardTransient.sol";
+import {TransientStorageHelpers} from "../libs/TransientStorageHelpers.sol";
 
-import { VaultStateBits, VaultStateLib } from "./VaultStateLib.sol";
-import { PoolConfigBits, PoolConfigLib } from "./PoolConfigLib.sol";
-import { ERC20MultiToken } from "./ERC20MultiToken.sol";
-import { PoolDataLib } from "./PoolDataLib.sol";
-import { VaultStorage } from "./VaultStorage.sol";
+import {VaultStateBits, VaultStateLib} from "../libs/VaultStateLib.sol";
+import {PoolConfigBits, PoolConfigLib} from "../libs/PoolConfigLib.sol";
+import {ERC20MultiToken} from "./ERC20MultiToken.sol";
+import {PoolDataLib} from "../libs/PoolDataLib.sol";
+import {VaultStorage} from "./VaultStorage.sol";
 
 /**
  * @notice Functions and modifiers shared between the main Vault and its extension contracts.

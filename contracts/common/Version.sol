@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.24;
 
-import { IVersion } from "./IVersion.sol";
+import {IVersion} from "../interfaces/IVersion.sol";
 
 /**
  * @notice Retrieves a contract's version from storage.

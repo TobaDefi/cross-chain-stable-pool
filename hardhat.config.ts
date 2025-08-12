@@ -113,9 +113,9 @@ const config: HardhatUserConfig = {
             }
         ]
     },
-    defaultNetwork: "zeta_testnet",
+    // defaultNetwork: "zeta_testnet",
     // defaultNetwork: "sepolia",
-    // defaultNetwork: "hardhat",
+    defaultNetwork: "hardhat",
     networks: {
         hardhat: {
             chains: {
@@ -213,7 +213,7 @@ const config: HardhatUserConfig = {
         },
         arb_testnet: {
             chainId: 421614,
-            url: "https://arbitrum-sepolia.therpc.io",
+            url: "https://rpc.ankr.com/arbitrum_sepolia/b806ad2e9eeae45e75dc327701b43e66bb7c741a6d02e2eaad4164ffc10ef73f",
             accounts: [...MAINNET_KEYS]
         },
         avalanche_testnet: {

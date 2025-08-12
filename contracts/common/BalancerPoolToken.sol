@@ -2,18 +2,19 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-// import { IERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol"; // @todo delete
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Nonces } from "@openzeppelin/contracts/utils/Nonces.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+// @todo delete
+// import { IERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Nonces} from "@openzeppelin/contracts/utils/Nonces.sol";
 
-import { IRateProvider } from "./IRateProvider.sol";
-import { IVault } from "./IVault.sol";
+import {IRateProvider} from "../interfaces/IRateProvider.sol";
+import {IVault} from "../interfaces/IVault.sol";
 
-import { VaultGuard } from "./VaultGuard.sol";
+import {VaultGuard} from "./VaultGuard.sol";
 
 /**
  * @notice `BalancerPoolToken` is a fully ERC20-compatible token to be used as the base contract for Balancer Pools,
@@ -22,7 +23,8 @@ import { VaultGuard } from "./VaultGuard.sol";
  * @dev Implementation of the ERC-20 Permit extension allowing approvals to be made via signatures, as defined in
  * https://eips.ethereum.org/EIPS/eip-2612[ERC-2612].
  */
-// contract BalancerPoolToken is IERC20, IERC20Metadata, IERC20Permit, IRateProvider, EIP712, Nonces, ERC165, VaultGuard { // @todo delete
+// @todo delete
+// contract BalancerPoolToken is IERC20, IERC20Metadata, IERC20Permit, IRateProvider, EIP712, Nonces, ERC165, VaultGuard {
 contract BalancerPoolToken is IERC20, IERC20Metadata, IRateProvider, EIP712, Nonces, ERC165, VaultGuard {
     bytes32 public constant PERMIT_TYPEHASH =
         keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
@@ -151,7 +153,7 @@ contract BalancerPoolToken is IERC20, IERC20Metadata, IRateProvider, EIP712, Non
         _vault.approve(owner, spender, amount);
     }
 
-    // // @inheritdoc IERC20Permit 
+    // // @inheritdoc IERC20Permit
     // function nonces(address owner) public view virtual override(IERC20Permit, Nonces) returns (uint256) {
     //     return super.nonces(owner);
     // } // @todo delete

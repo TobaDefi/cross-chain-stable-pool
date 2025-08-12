@@ -2,17 +2,13 @@
 
 pragma solidity ^0.8.24;
 
-import { IBasePoolFactory } from "./IBasePoolFactory.sol";
-import { IVault } from "./IVault.sol";
-import {
-    TokenConfig,
-    PoolRoleAccounts,
-    LiquidityManagement
-} from "./VaultTypes.sol";
+import {IBasePoolFactory} from "../interfaces/IBasePoolFactory.sol";
+import {IVault} from "../interfaces/IVault.sol";
+import {TokenConfig, PoolRoleAccounts, LiquidityManagement} from "./VaultTypes.sol";
 
-import { BaseSplitCodeFactory } from "./BaseSplitCodeFactory.sol";
-import { FactoryWidePauseWindow } from "./FactoryWidePauseWindow.sol";
-import { SingletonAuthentication } from "./SingletonAuthentication.sol";
+import {BaseSplitCodeFactory} from "./BaseSplitCodeFactory.sol";
+import {FactoryWidePauseWindow} from "./FactoryWidePauseWindow.sol";
+import {SingletonAuthentication} from "./SingletonAuthentication.sol";
 
 /**
  * @notice Base contract for Pool factories.

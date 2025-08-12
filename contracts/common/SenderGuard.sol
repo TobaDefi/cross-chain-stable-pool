@@ -2,14 +2,12 @@
 
 pragma solidity ^0.8.24;
 
-import { IWETH } from "./IWETH.sol";
-import { ISenderGuard } from "./ISenderGuard.sol";
-import { IVault } from "./IVault.sol";
+import {IWETH} from "../interfaces/IWETH.sol";
+import {ISenderGuard} from "../interfaces/ISenderGuard.sol";
+import {IVault} from "../interfaces/IVault.sol";
 
-import { StorageSlotExtension } from "./StorageSlotExtension.sol";
-import {
-    TransientStorageHelpers
-} from "./TransientStorageHelpers.sol";
+import {StorageSlotExtension} from "../libs/StorageSlotExtension.sol";
+import {TransientStorageHelpers} from "../libs/TransientStorageHelpers.sol";
 
 /**
  * @notice Abstract base contract for functions shared among all Routers.
