@@ -88,5 +88,15 @@
                 "chainId": 84532
             }
         }
+    },
+    "kaia_kairos": {
+        "old": {},
+        "new": {
+            "KBKRW": {
+                "address": "0x6B513B40eBc0B4D7B197730476ed3324346F2822",
+                "deployedBlock": 194226805,
+                "chainId": 1001
+            }
+        }
     }
 }
